@@ -1,7 +1,7 @@
 <template>
   <main ref="canvasRoot">
     <canvas ref="cDom" class="canvas"></canvas>
-    <action-bar />
+    <action-bar :handleDownload="handleDownload" />
   </main>
 </template>
 
@@ -102,6 +102,7 @@ const drawMark = (x, y) => {
   ctx.value.lineTo(distence - obj.h, obj.size)
   ctx.value.lineTo(0, obj.w / 2)
   ctx.value.lineTo(0, 0)
+  ctx.value.fillStyle = 'red'
   ctx.value.fill()
 
   ctx.value.closePath()
@@ -146,6 +147,15 @@ const drawText = (x, y) => {
   `
   canvasRoot.value.appendChild(textarea)
 }
+
+const handleDownload = () => {
+  const url = cDom.value.toDataURL()
+  const targ_a = document.createElement('a')
+  targ_a.setAttribute('href', url)
+  targ_a.setAttribute('download', Math.random().toString(16).slice(-6))
+  targ_a.click()
+}
+
 const handleClear = (x, y) => {
   ctx.value.save()
   ctx.value.beginPath()

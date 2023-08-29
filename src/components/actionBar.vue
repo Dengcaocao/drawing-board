@@ -14,6 +14,13 @@
 import { reactive } from 'vue'
 import { useContext } from '@/stores/context'
 
+const props = defineProps({
+  handleDownload: {
+    type: Function,
+    required: true
+  }
+})
+
 const stroe = useContext()
 
 const actionType = reactive([
@@ -38,16 +45,17 @@ const actionType = reactive([
     type: 'text'
   },
   {
-    icon: 'icon-xiazai-',
-    type: 'download'
-  },
-  {
     icon: 'icon-rubber-full',
     type: 'clear'
+  },
+  {
+    icon: 'icon-xiazai-',
+    type: 'download'
   }
 ])
 
 const changeType = type => {
+  type === 'download' && props.handleDownload()
   stroe.handleCtx(type)
 }
 </script>
