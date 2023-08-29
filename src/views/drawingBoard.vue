@@ -1,5 +1,5 @@
 <template>
-  <main>
+  <main ref="canvasRoot">
     <canvas ref="cDom" class="canvas"></canvas>
     <action-bar />
   </main>
@@ -16,6 +16,7 @@ const contextStore = useContext()
  * @description: 初始化画布大小&获取画笔
  * @return {*}
  */
+const canvasRoot = ref()
 const cDom = ref()
 const ctx = ref()
 const initSize = () => {
@@ -107,6 +108,44 @@ const drawMark = (x, y) => {
   ctx.value.restore()
 }
 
+const drawText = (x, y) => {
+  const font = 32
+  const textarea = document.createElement('textarea')
+  textarea.cols = 1
+  textarea.rows = 1
+  textarea.oninput = e => {
+    // const fillWidth = ctx.value.measureText(textarea.value).width
+    textarea.cols = e.target.value.length + 1
+    // textarea.style.width = `${fillWidth + 32}px`
+    ctx.value.save()
+    ctx.value.beginPath()
+    ctx.value.font = `${font}px auto`
+    ctx.value.textBaseline = 'middle'
+    // ctx.value.letterSpacing = '4px'
+    ctx.value.fillText(e.target.value, x + 2, y)
+    ctx.value.closePath()
+    ctx.value.restore()
+  }
+  textarea.onblur = () => textarea.parentNode.removeChild(textarea)
+  textarea.style.cssText = `
+    overflow: hidden;
+    position: absolute;
+    top: ${y - font / 2}px;
+    left: ${x}px;
+    height: ${font}px;
+    line-height: ${font}px;
+    background-color: transparent;
+    outline: none;
+    resize: none;
+    border: 1px solid #000;
+    font-size: ${font}px;
+    white-space: pre-wrap;
+    text-indent: 2px;
+    color: transparent;
+    caret-color: #000;
+  `
+  canvasRoot.value.appendChild(textarea)
+}
 const handleMousedown = e => {
   isStart.value = true
   const { clientX, clientY } = e
