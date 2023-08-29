@@ -215,8 +215,8 @@ onMounted(() => {
   top: 0;
   left: 0;
   display: block;
-  background-image: linear-gradient( #000 4%, transparent 4%),
-                    linear-gradient(to right, #000 4%, transparent 4%);
+  background-image: linear-gradient(transparent 96%, rgba(0, 0, 0, 0.2) 96%),
+                    linear-gradient(to right, transparent 96%, rgba(0, 0, 0, 0.2) 96%);
   background-size: 20px 20px;
 }
 </style>
