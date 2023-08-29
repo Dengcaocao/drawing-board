@@ -72,9 +72,9 @@ const changeType = type => {
   padding: 12px;
   border-radius: 10px;
   background-color: #fff;
-  box-shadow: 0 6px 16px -8px rgba(0, 0, 0, 0.08)
-              0 9px 28px 0px rgba(0, 0, 0, 0.05)
-              0 12px 48px 16px rgba(0, 0, 0, 0.03);
+  box-shadow: 0 3px 6px -4px rgba(0, 0, 0, 0.12),
+              0 6px 16px 0px rgba(0, 0, 0, 0.08),
+              0 9px 28px 8px rgba(0, 0, 0, 0.05);
 }
 .aside .item {
   width: 20px;
