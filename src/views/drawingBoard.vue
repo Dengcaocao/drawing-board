@@ -8,9 +8,11 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import { useContext } from '@/stores/context'
+import { useDraw } from '@/hooks/draw'
 import ActionBar from '@/components/actionBar.vue'
 
 const contextStore = useContext()
+const { Draw } = useDraw()
 
 /**
  * @description: 初始化画布大小&获取画笔
@@ -19,6 +21,7 @@ const contextStore = useContext()
 const canvasRoot = ref()
 const cDom = ref()
 const ctx = ref()
+let drawMethod = null
 const initSize = () => {
   const { clientWidth, clientHeight } = document.documentElement
   cDom.value.width = clientWidth
@@ -171,13 +174,15 @@ const handleClear = (x, y) => {
 const handleMousedown = e => {
   isStart.value = true
   const { clientX, clientY } = e
+  drawMethod = new Draw(ctx, { x: clientX, y: clientY })
   startPoint.value = {
     x: clientX,
     y: clientY
   }
   ctx.value.moveTo(clientX, clientY)
   if (contextStore.ctx.mode === 'text') {
-    drawText(clientX, clientY)
+    // drawText(clientX, clientY)
+    drawMethod.text(clientX, clientY, canvasRoot)
   }
 }
 
@@ -191,7 +196,10 @@ const handleMousemove = e => {
     mark: drawMark,
     clear: handleClear
   }
-  drawType[contextStore.ctx.mode](clientX, clientY)
+  contextStore.ctx.mode === 'text'
+    ? drawMethod.text(clientX, clientY, canvasRoot)
+    : drawMethod[contextStore.ctx.mode](clientX, clientY)
+  // drawType[contextStore.ctx.mode](clientX, clientY)
 }
 
 const handleMouseup = () => isStart.value = false
