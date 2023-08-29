@@ -37,21 +37,74 @@ const draw = (x, y) => {
 }
 
 const drawArc = (x, y) => {
+  ctx.value.clearRect(0, 0, cDom.value.width, cDom.value.height)
   const distenceX = Math.abs(x - startPoint.value.x)
   const distenceY = Math.abs(y - startPoint.value.y)
   const r = Math.pow(distenceX * distenceX + distenceY * distenceY, 1/2)
   ctx.value.beginPath()
-  ctx.value.arc(x, y, r, 0, Math.PI * 2)
+  ctx.value.arc(startPoint.value.x, startPoint.value.y, r, 0, Math.PI * 2)
   ctx.value.closePath()
   ctx.value.stroke()
 }
 
 const drawRect = (x, y) => {
+  ctx.value.clearRect(0, 0, cDom.value.width, cDom.value.height)
   const distenceX = x - startPoint.value.x
   const distenceY = y - startPoint.value.y
   ctx.value.beginPath()
   ctx.value.strokeRect(startPoint.value.x, startPoint.value.y, distenceX, distenceY)
   ctx.value.closePath()
+}
+
+const getMarkSize = distence => {
+  const h = distence / 4
+  switch (true) {
+    case distence < 100:
+      return {
+        w: 1,
+        h: h < 2 ? 2 : h,
+        incline: 2,
+        size: h < 2 ? 2 : h / 2
+      }
+  
+    default:
+      return {
+        w: 4,
+        h: 20,
+        incline: 4,
+        size: 10
+      }
+  }
+}
+
+const drawMark = (x, y) => {
+  ctx.value.clearRect(0, 0, cDom.value.width, cDom.value.height)
+  ctx.value.save()
+  // 计算长度
+  const distenceX = x - startPoint.value.x
+  const distenceY = y - startPoint.value.y
+  const distence = Math.pow(distenceX * distenceX + distenceY * distenceY, 1/2) * (distenceX < 0 ? -1 : 1)
+  // 旋转角度
+  let deg = Math.asin(Math.sin(distenceY / distence))
+
+  ctx.value.translate(startPoint.value.x, startPoint.value.y)
+  ctx.value.rotate(deg)
+  ctx.value.beginPath()
+
+  const obj = getMarkSize(Math.abs(distence))
+  ctx.value.lineTo(0, 0)
+  ctx.value.lineTo(0, -obj.w / 2)
+  ctx.value.lineTo(distence - obj.h, -obj.size)
+  ctx.value.lineTo(distence - obj.h - obj.incline, -obj.size * 2)
+  ctx.value.lineTo(distence, 0)
+  ctx.value.lineTo(distence - obj.h - obj.incline, obj.size * 2)
+  ctx.value.lineTo(distence - obj.h, obj.size)
+  ctx.value.lineTo(0, obj.w / 2)
+  ctx.value.lineTo(0, 0)
+  ctx.value.fill()
+
+  ctx.value.closePath()
+  ctx.value.restore()
 }
 
 const handleMousedown = e => {
