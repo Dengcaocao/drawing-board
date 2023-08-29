@@ -93,7 +93,12 @@ onMounted(() => {
 
 <style>
 .canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
   display: block;
-  background-color: antiquewhite;
+  background-image: linear-gradient( #000 4%, transparent 4%),
+                    linear-gradient(to right, #000 4%, transparent 4%);
+  background-size: 20px 20px;
 }
 </style>
