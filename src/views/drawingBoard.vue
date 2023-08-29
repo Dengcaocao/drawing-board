@@ -70,7 +70,8 @@ const handleMousemove = e => {
   const drawType = {
     line: draw,
     arc: drawArc,
-    rect: drawRect
+    rect: drawRect,
+    mark: drawMark
   }
   drawType[contextStore.ctx.mode](clientX, clientY)
 }

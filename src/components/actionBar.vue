@@ -18,16 +18,28 @@ const stroe = useContext()
 
 const actionType = reactive([
   {
+    icon: 'icon-juxing1',
+    type: 'rect'
+  },
+  {
+    icon: 'icon-yuanxingweixuanzhong',
+    type: 'arc'
+  },
+  {
+    icon: 'icon-jiantou_youshang',
+    type: 'mark'
+  },
+  {
     icon: 'icon-Icon_huabi',
     type: 'line'
   },
   {
-    icon: 'icon-weixuanzhongyuanquan',
-    type: 'arc'
+    icon: 'icon-wenzi',
+    type: 'text'
   },
   {
-    icon: 'icon-juxing',
-    type: 'rect'
+    icon: 'icon-xiazai-',
+    type: 'download'
   },
   {
     icon: 'icon-rubber-full',
@@ -36,9 +48,7 @@ const actionType = reactive([
 ])
 
 const changeType = type => {
-  // stroe.mode = type
   stroe.handleCtx(type)
-  console.log(stroe.ctx.mode)
 }
 </script>
 
