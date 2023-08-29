@@ -146,6 +146,18 @@ const drawText = (x, y) => {
   `
   canvasRoot.value.appendChild(textarea)
 }
+const handleClear = (x, y) => {
+  ctx.value.save()
+  ctx.value.beginPath()
+  ctx.value.lineWidth = 20
+  ctx.value.lineCap = 'round'
+  ctx.value.globalCompositeOperation = 'destination-out'
+  ctx.value.lineTo(x, y)
+  ctx.value.stroke()
+  ctx.value.closePath()
+  ctx.value.restore()
+}
+
 const handleMousedown = e => {
   isStart.value = true
   const { clientX, clientY } = e
@@ -154,16 +166,20 @@ const handleMousedown = e => {
     y: clientY
   }
   ctx.value.moveTo(clientX, clientY)
+  if (contextStore.ctx.mode === 'text') {
+    drawText(clientX, clientY)
+  }
 }
 
 const handleMousemove = e => {
-  if (!isStart.value) return
+  if (!isStart.value || contextStore.ctx.mode === 'text') return
   const { clientX, clientY } = e
   const drawType = {
     line: draw,
     arc: drawArc,
     rect: drawRect,
-    mark: drawMark
+    mark: drawMark,
+    clear: handleClear
   }
   drawType[contextStore.ctx.mode](clientX, clientY)
 }
