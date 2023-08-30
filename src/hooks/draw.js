@@ -1,35 +1,41 @@
 export function useDraw() {
   class Draw {
-    constructor (ctx, startPoint) {
-      this.pathStore = []
+    constructor (canvas, ctx) {
+      this.canvas = canvas
       this.ctx = ctx
+      this.pathStore = []
+      this.path = null
+    }
+
+    init (startPoint) {
       this.startPoint = startPoint
       this.lastPoint = startPoint
     }
 
     line (x, y) {
-      const path = new Path2D()
-      path.moveTo(this.lastPoint.x, this.lastPoint.y)
-      path.lineTo(x, y)
-      this.draw(path, 'stroke')
+      this.path = new Path2D()
+      this.path.moveTo(this.lastPoint.x, this.lastPoint.y)
+      this.path.lineTo(x, y)
+      this.draw('stroke')
       this.lastPoint = { x, y }
     }
 
     arc (x, y) {
-      const path = new Path2D()
+      this.clearCanvas()
+      this.path = new Path2D()
       const distenceX = Math.abs(x - this.startPoint.x)
       const distenceY = Math.abs(y - this.startPoint.y)
       const r = Math.pow(distenceX * distenceX + distenceY * distenceY, 1/2)
-      path.arc(this.startPoint.x, this.startPoint.y, r, 0, Math.PI * 2)
-      this.draw(path, 'stroke')
+      this.path.arc(this.startPoint.x, this.startPoint.y, r, 0, Math.PI * 2)
+      this.draw('stroke')
     }
 
     rect (x, y) {
-      const path = new Path2D()
+      this.path = new Path2D()
       const distenceX = x - this.startPoint.x
       const distenceY = y - this.startPoint.y
-      path.rect(this.startPoint.x, this.startPoint.y, distenceX, distenceY)
-      this.draw(path, 'stroke')
+      this.path.rect(this.startPoint.x, this.startPoint.y, distenceX, distenceY)
+      this.draw('stroke')
     }
 
     getMarkSize (distence) {
@@ -54,11 +60,8 @@ export function useDraw() {
     }
 
     mark (x, y) {
-      /**
-       * 画布清除和状态保存
-       */
       this.ctx.value.clearRect(0, 0, window.innerWidth, window.innerHeight)
-      const path = new Path2D()
+      this.path = new Path2D()
       this.ctx.value.save()
       // 计算长度
       const distenceX = x - this.startPoint.x
@@ -71,16 +74,16 @@ export function useDraw() {
       this.ctx.value.fillStyle = 'red'
 
       const obj = this.getMarkSize(Math.abs(distence))
-      path.lineTo(0, 0)
-      path.lineTo(0, -obj.w / 2)
-      path.lineTo(distence - obj.h, -obj.size)
-      path.lineTo(distence - obj.h - obj.incline, -obj.size * 2)
-      path.lineTo(distence, 0)
-      path.lineTo(distence - obj.h - obj.incline, obj.size * 2)
-      path.lineTo(distence - obj.h, obj.size)
-      path.lineTo(0, obj.w / 2)
-      path.lineTo(0, 0)
-      this.draw(path, 'fill')
+      this.path.lineTo(0, 0)
+      this.path.lineTo(0, -obj.w / 2)
+      this.path.lineTo(distence - obj.h, -obj.size)
+      this.path.lineTo(distence - obj.h - obj.incline, -obj.size * 2)
+      this.path.lineTo(distence, 0)
+      this.path.lineTo(distence - obj.h - obj.incline, obj.size * 2)
+      this.path.lineTo(distence - obj.h, obj.size)
+      this.path.lineTo(0, obj.w / 2)
+      this.path.lineTo(0, 0)
+      this.draw('fill')
       this.ctx.value.restore()
     }
 
@@ -121,28 +124,36 @@ export function useDraw() {
     }
 
     clear (x, y) {
-      const path = new Path2D()
+      this.path = new Path2D()
       this.ctx.value.save()
-      this.ctx.value.beginPath()
+
       this.ctx.value.lineWidth = 20
       this.ctx.value.lineCap = 'round'
       this.ctx.value.globalCompositeOperation = 'destination-out'
-      path.moveTo(this.lastPoint.x, this.lastPoint.y)
-      path.lineTo(x, y)
-      this.draw(path, 'fill')
+
+      this.path.moveTo(this.lastPoint.x, this.lastPoint.y)
+      this.path.lineTo(x, y)
+      this.draw('stroke')
       this.lastPoint = { x, y }
+      this.ctx.value.restore()
+    }
+
+    clearCanvas () {
+      this.ctx.value.clearRect(0, 0, this.canvas.value.width, this.canvas.value.height)
+    }
+
+    draw (type) {
+      this.ctx.value.save()
+      this.ctx.value.beginPath()
+      type === 'stroke'
+        ? this.ctx.value.stroke(this.path)
+        : this.ctx.value.fill(this.path)
       this.ctx.value.closePath()
       this.ctx.value.restore()
     }
 
-    draw (path, type) {
-      this.ctx.value.save()
-      this.ctx.value.beginPath()
-      type === 'stroke'
-        ? this.ctx.value.stroke(path)
-        : this.ctx.value.fill(path)
-      this.ctx.value.closePath()
-      this.ctx.value.restore()
+    savePath () {
+      this.pathStore.push(this.path)
     }
 
   }
