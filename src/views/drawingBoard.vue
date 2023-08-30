@@ -30,10 +30,6 @@ const initSize = () => {
 }
 
 const isStart = ref(false)
-const startPoint = ref({
-  x: 0,
-  y: 0
-})
 
 const handleDownload = () => {
   const url = cDom.value.toDataURL()
@@ -47,13 +43,7 @@ const handleMousedown = e => {
   isStart.value = true
   const { clientX, clientY } = e
   drawMethod.init({ x: clientX, y: clientY })
-  startPoint.value = {
-    x: clientX,
-    y: clientY
-  }
-  ctx.value.moveTo(clientX, clientY)
   if (contextStore.ctx.mode === 'text') {
-    // drawText(clientX, clientY)
     drawMethod.text(clientX, clientY, canvasRoot)
   }
 }

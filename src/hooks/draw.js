@@ -10,6 +10,7 @@ export function useDraw() {
     init (startPoint) {
       this.startPoint = startPoint
       this.lastPoint = startPoint
+      this.ctx.value.moveTo(startPoint.x, startPoint.y)
     }
 
     line (x, y) {
