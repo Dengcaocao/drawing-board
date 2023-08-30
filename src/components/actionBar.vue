@@ -5,7 +5,7 @@
       v-for="item in actionType"
       :key="item.type"
       :class="[item.icon, stroe.ctx.mode === item.type ? 'active' : '']"
-      @click="changeType(item.type)">
+      @click.stop="changeType(item.type)">
     </div>
   </aside>
 </template>
