@@ -51,13 +51,16 @@ const handleMousedown = e => {
 const handleMousemove = e => {
   if (!isStart.value || contextStore.ctx.mode === 'text') return
   const { clientX, clientY } = e
-  drawMethod.pathStore.forEach(path => {
+  drawMethod.clearCanvas()
+  const drayType = ['line', 'clear']
+  drayType.includes(contextStore.ctx.mode) && drawMethod.savePath()
+  drawMethod.pathStore.forEach(({ type, styleOptions, path }) => {
+    drawMethod.type = type
+    drawMethod.styleOptions = styleOptions
     drawMethod.path = path
-    drawMethod.draw('stroke')
+    drawMethod.draw(true)
   })
-  contextStore.ctx.mode === 'text'
-    ? drawMethod.text(clientX, clientY, canvasRoot)
-    : drawMethod[contextStore.ctx.mode](clientX, clientY)
+  drawMethod[contextStore.ctx.mode](clientX, clientY)
 }
 
 const handleMouseup = () => {

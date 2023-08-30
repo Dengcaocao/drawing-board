@@ -4,7 +4,9 @@ export function useDraw() {
       this.canvas = canvas
       this.ctx = ctx
       this.pathStore = []
-      this.path = null
+      this.type = 'stroke'
+      this.path = new Path2D()
+      this.styleOptions = null
     }
 
     init (startPoint) {
@@ -17,18 +19,19 @@ export function useDraw() {
       this.path = new Path2D()
       this.path.moveTo(this.lastPoint.x, this.lastPoint.y)
       this.path.lineTo(x, y)
-      this.draw('stroke')
+      this.type = 'stroke'
+      this.draw()
       this.lastPoint = { x, y }
     }
 
     arc (x, y) {
-      this.clearCanvas()
       this.path = new Path2D()
       const distenceX = Math.abs(x - this.startPoint.x)
       const distenceY = Math.abs(y - this.startPoint.y)
       const r = Math.pow(distenceX * distenceX + distenceY * distenceY, 1/2)
       this.path.arc(this.startPoint.x, this.startPoint.y, r, 0, Math.PI * 2)
-      this.draw('stroke')
+      this.type = 'stroke'
+      this.draw()
     }
 
     rect (x, y) {
@@ -36,7 +39,8 @@ export function useDraw() {
       const distenceX = x - this.startPoint.x
       const distenceY = y - this.startPoint.y
       this.path.rect(this.startPoint.x, this.startPoint.y, distenceX, distenceY)
-      this.draw('stroke')
+      this.type = 'stroke'
+      this.draw()
     }
 
     getMarkSize (distence) {
@@ -61,7 +65,6 @@ export function useDraw() {
     }
 
     mark (x, y) {
-      this.ctx.value.clearRect(0, 0, window.innerWidth, window.innerHeight)
       this.path = new Path2D()
       this.ctx.value.save()
       // 计算长度
@@ -70,9 +73,12 @@ export function useDraw() {
       const distence = Math.pow(distenceX * distenceX + distenceY * distenceY, 1/2) * (distenceX < 0 ? -1 : 1)
       // 旋转角度
       let deg = Math.asin(Math.sin(distenceY / distence))
-      this.ctx.value.translate(this.startPoint.x, this.startPoint.y)
-      this.ctx.value.rotate(deg)
-      this.ctx.value.fillStyle = 'red'
+      const styleOptions = {
+        translate: { x: this.startPoint.x, y: this.startPoint.y },
+        rotate: deg,
+        fillStyle: 'red'
+      }
+      this.setStyle(styleOptions)
 
       const obj = this.getMarkSize(Math.abs(distence))
       this.path.lineTo(0, 0)
@@ -84,7 +90,8 @@ export function useDraw() {
       this.path.lineTo(distence - obj.h, obj.size)
       this.path.lineTo(0, obj.w / 2)
       this.path.lineTo(0, 0)
-      this.draw('fill')
+      this.type = 'fill'
+      this.draw()
       this.ctx.value.restore()
     }
 
@@ -134,7 +141,8 @@ export function useDraw() {
 
       this.path.moveTo(this.lastPoint.x, this.lastPoint.y)
       this.path.lineTo(x, y)
-      this.draw('stroke')
+      this.type = 'stroke'
+      this.draw()
       this.lastPoint = { x, y }
       this.ctx.value.restore()
     }
@@ -143,10 +151,26 @@ export function useDraw() {
       this.ctx.value.clearRect(0, 0, this.canvas.value.width, this.canvas.value.height)
     }
 
-    draw (type) {
+    setStyle (options) {
+      for (let i in options) {
+        if (i === 'translate') {
+          this.ctx.value[i](options[i].x, options[i].y)
+          continue
+        }
+        if (i === 'rotate') {
+          this.ctx.value[i](options[i])
+          continue
+        }
+        this.ctx.value[i] = options[i]
+      }
+      this.styleOptions = options
+    }
+
+    draw (isPathStore) {
       this.ctx.value.save()
       this.ctx.value.beginPath()
-      type === 'stroke'
+      isPathStore && this.setStyle(this.styleOptions)
+      this.type === 'stroke'
         ? this.ctx.value.stroke(this.path)
         : this.ctx.value.fill(this.path)
       this.ctx.value.closePath()
@@ -154,7 +178,13 @@ export function useDraw() {
     }
 
     savePath () {
-      this.pathStore.push(this.path)
+      this.pathStore.push({
+        type: this.type,
+        styleOptions: this.styleOptions || {},
+        path: this.path
+      })
+      this.styleOptions = null
+      this.type = 'stroke'
     }
 
   }
