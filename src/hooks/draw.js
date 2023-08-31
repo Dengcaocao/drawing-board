@@ -10,7 +10,7 @@ export function useDraw() {
       this.pathStore = []
       this.type = 'stroke'
       this.path = new Path2D()
-      this.styleOptions = null
+      this.contextOptions = null
     }
 
     init (startPoint) {
@@ -84,7 +84,7 @@ export function useDraw() {
       const distence = Math.pow(distenceX * distenceX + distenceY * distenceY, 1/2) * direction
       // 旋转角度
       let deg = Math.asin(Math.sin(distenceY / distence))
-      this.setStyle({
+      this.setContextOptions({
         translate: { x: this.startPoint.x, y: this.startPoint.y },
         rotate: deg
       })
@@ -109,23 +109,22 @@ export function useDraw() {
       const textarea = document.createElement('textarea')
       textarea.cols = 1
       textarea.rows = 1
-      const styleOptions = {
+      this.setContextOptions({
         font: `${font}px auto`,
         textBaseline: 'middle'
-      }
-      this.setStyle(styleOptions)
+      })
       textarea.oninput = e => {
         this.clearCanvas()
-        this.pathStore.forEach(({ type, styleOptions, path }) => {
+        this.pathStore.forEach(({ type, contextOptions, path }) => {
           if (path.text) {
             this.ctx.fillText(path.text, path.x, path.y)
           } else {
             this.type = type
-            this.styleOptions = styleOptions
+            this.contextOptions = contextOptions
             this.path = path
             this.draw(true)
           }
-          this.styleOptions = null
+          this.contextOptions = null
         })
         textarea.cols = e.target.value.length + 1
         // 缩进了 2px
@@ -164,7 +163,7 @@ export function useDraw() {
     clear (x, y) {
       this.ctx.save()
       this.path = new Path2D()
-      this.setStyle({
+      this.setContextOptions({
         lineWidth: 20,
         lineCap: 'round',
         globalCompositeOperation: 'destination-out'
@@ -182,7 +181,7 @@ export function useDraw() {
       this.ctx.clearRect(0, 0, this.canvas.value.width, this.canvas.value.height)
     }
 
-    setStyle (options) {
+    setContextOptions (options) {
       for (let i in options) {
         if (i === 'translate') {
           this.ctx[i](options[i].x, options[i].y)
@@ -194,15 +193,15 @@ export function useDraw() {
         }
         this.ctx[i] = options[i]
       }
-      this.styleOptions = { ...this.styleOptions, ...options }
+      this.contextOptions = { ...this.contextOptions, ...options }
     }
 
     draw (isPathStore) {
       this.ctx.save()
       this.ctx.beginPath()
       isPathStore
-        ? this.setStyle(this.styleOptions)
-        : this.setStyle({
+        ? this.setContextOptions(this.contextOptions)
+        : this.setContextOptions({
             strokeStyle: contextStore.ctx.color,
             fillStyle: contextStore.ctx.color,
             lineWidth: contextStore.ctx.lineWidth
@@ -217,10 +216,10 @@ export function useDraw() {
     savePath () {
       this.pathStore.push({
         type: this.type,
-        styleOptions: this.styleOptions || {},
+        contextOptions: this.contextOptions || {},
         path: this.path
       })
-      this.styleOptions = null
+      this.contextOptions = null
       this.type = 'stroke'
     }
 
