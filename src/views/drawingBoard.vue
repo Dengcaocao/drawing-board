@@ -1,6 +1,6 @@
 <template>
   <main ref="canvasRoot">
-    <canvas ref="cDom" class="canvas"></canvas>
+    <canvas ref="cDom" class="canvas" :class="{'show-grid': contextStore.isGrid}"></canvas>
     <action-bar :handleDownload="handleDownload" />
   </main>
 </template>
@@ -92,6 +92,8 @@ onMounted(() => {
   top: 0;
   left: 0;
   display: block;
+}
+.canvas.show-grid {
   background-image: linear-gradient(transparent 96%, rgba(0, 0, 0, 0.2) 96%),
                     linear-gradient(to right, transparent 96%, rgba(0, 0, 0, 0.2) 96%);
   background-size: 20px 20px;

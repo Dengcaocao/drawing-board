@@ -10,6 +10,11 @@
         'background-image': `linear-gradient(to right, #91caff ${stroe.ctx.lineWidth / maxWidth * 100 + '%'}, transparent ${stroe.ctx.lineWidth / 100 * 100 + '%'})`
       }"
       @change="handleChange('lineWidth', $event.target.value)">
+    <div
+      class="item iconfont icon-wangge"
+      :class="{'hide-grid': !stroe.isGrid}"
+      @click="stroe.updateIsGrid">
+    </div>
     <div class="item">
       <input
         class="color"
@@ -140,5 +145,19 @@ const handleChange = (fileds, value) => {
   box-shadow: 0 1px 2px -2px rgba(0, 0, 0, 0.16),
               0 3px 6px 0px rgba(0, 0, 0, 0.12),
               0 4px 12px 4px rgba(0, 0, 0, 0.09);
+}
+.item.hide-grid {
+  position: relative;
+}
+.item.hide-grid::after {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 85%;
+  height: 85%;
+  content: '';
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background-image: linear-gradient(to bottom left, transparent 51%, gray 51%, gray 55%, transparent 55%);
 }
 </style>

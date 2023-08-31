@@ -1,7 +1,8 @@
-import { reactive } from 'vue'
+import { reactive, ref } from 'vue'
 import { defineStore } from 'pinia'
 
 export const useContext = defineStore('ctx', () => {
+  const isGrid = ref(true)
   const ctx = reactive({
     // line | arc | rect | clear
     mode: 'line',
@@ -9,9 +10,11 @@ export const useContext = defineStore('ctx', () => {
     lineWidth: 1
   })
 
+  const updateIsGrid = () => isGrid.value = !isGrid.value
+
   const updateCtx = (fileds, value) => {
     ctx[fileds] = value
   }
 
-  return { ctx, updateCtx }
+  return { isGrid, ctx, updateIsGrid, updateCtx }
 })
