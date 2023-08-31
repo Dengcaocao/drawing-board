@@ -134,10 +134,12 @@ export function useDraw() {
     clear (x, y) {
       this.path = new Path2D()
       this.ctx.save()
-
-      this.ctx.lineWidth = 20
-      this.ctx.lineCap = 'round'
-      this.ctx.globalCompositeOperation = 'destination-out'
+      const styleOptions = {
+        lineWidth: 20,
+        lineCap: 'round',
+        globalCompositeOperation: 'destination-out'
+      }
+      this.setStyle(styleOptions)
 
       this.path.moveTo(this.lastPoint.x, this.lastPoint.y)
       this.path.lineTo(x, y)
