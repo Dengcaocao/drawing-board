@@ -73,8 +73,8 @@ export function useDraw() {
     }
 
     mark (x, y) {
-      this.path = new Path2D()
       this.ctx.save()
+      this.path = new Path2D()
       // 计算位移
       const distenceX = x - this.startPoint.x
       const distenceY = y - this.startPoint.y
@@ -84,12 +84,10 @@ export function useDraw() {
       const distence = Math.pow(distenceX * distenceX + distenceY * distenceY, 1/2) * direction
       // 旋转角度
       let deg = Math.asin(Math.sin(distenceY / distence))
-      const styleOptions = {
+      this.setStyle({
         translate: { x: this.startPoint.x, y: this.startPoint.y },
-        rotate: deg,
-        fillStyle: 'red'
-      }
-      this.setStyle(styleOptions)
+        rotate: deg
+      })
 
       const obj = this.getMarkSize(Math.abs(distence))
       this.path.lineTo(0, 0)
@@ -164,14 +162,13 @@ export function useDraw() {
     }
 
     clear (x, y) {
-      this.path = new Path2D()
       this.ctx.save()
-      const styleOptions = {
+      this.path = new Path2D()
+      this.setStyle({
         lineWidth: 20,
         lineCap: 'round',
         globalCompositeOperation: 'destination-out'
-      }
-      this.setStyle(styleOptions)
+      })
 
       this.path.moveTo(this.lastPoint.x, this.lastPoint.y)
       this.path.lineTo(x, y)
