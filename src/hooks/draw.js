@@ -1,8 +1,8 @@
 export function useDraw() {
   class Draw {
-    constructor (canvas, ctx) {
+    constructor (canvas) {
       this.canvas = canvas
-      this.ctx = ctx
+      this.ctx = canvas.value.getContext('2d')
       this.pathStore = []
       this.type = 'stroke'
       this.path = new Path2D()
@@ -12,7 +12,7 @@ export function useDraw() {
     init (startPoint) {
       this.startPoint = startPoint
       this.lastPoint = startPoint
-      this.ctx.value.moveTo(startPoint.x, startPoint.y)
+      this.ctx.moveTo(startPoint.x, startPoint.y)
     }
 
     line (x, y) {
@@ -66,7 +66,7 @@ export function useDraw() {
 
     mark (x, y) {
       this.path = new Path2D()
-      this.ctx.value.save()
+      this.ctx.save()
       // 计算长度
       const distenceX = x - this.startPoint.x
       const distenceY = y - this.startPoint.y
@@ -92,7 +92,7 @@ export function useDraw() {
       this.path.lineTo(0, 0)
       this.type = 'fill'
       this.draw()
-      this.ctx.value.restore()
+      this.ctx.restore()
     }
 
     text (x, y, canvasRoot) {
@@ -105,9 +105,9 @@ export function useDraw() {
         // const fillWidth = ctx.value.measureText(textarea.value).width
         textarea.cols = e.target.value.length + 1
         // textarea.style.width = `${fillWidth + 32}px`
-        this.ctx.value.font = `${font}px auto`
-        this.ctx.value.textBaseline = 'middle'
-        this.ctx.value.fillText(e.target.value, x + 2, y)
+        this.ctx.font = `${font}px auto`
+        this.ctx.textBaseline = 'middle'
+        this.ctx.fillText(e.target.value, x + 2, y)
         // this.draw(path, 'fill')
       }
       textarea.onblur = () => textarea.parentNode.removeChild(textarea)
@@ -133,48 +133,48 @@ export function useDraw() {
 
     clear (x, y) {
       this.path = new Path2D()
-      this.ctx.value.save()
+      this.ctx.save()
 
-      this.ctx.value.lineWidth = 20
-      this.ctx.value.lineCap = 'round'
-      this.ctx.value.globalCompositeOperation = 'destination-out'
+      this.ctx.lineWidth = 20
+      this.ctx.lineCap = 'round'
+      this.ctx.globalCompositeOperation = 'destination-out'
 
       this.path.moveTo(this.lastPoint.x, this.lastPoint.y)
       this.path.lineTo(x, y)
       this.type = 'stroke'
       this.draw()
       this.lastPoint = { x, y }
-      this.ctx.value.restore()
+      this.ctx.restore()
     }
 
     clearCanvas () {
-      this.ctx.value.clearRect(0, 0, this.canvas.value.width, this.canvas.value.height)
+      this.ctx.clearRect(0, 0, this.canvas.value.width, this.canvas.value.height)
     }
 
     setStyle (options) {
       for (let i in options) {
         if (i === 'translate') {
-          this.ctx.value[i](options[i].x, options[i].y)
+          this.ctx[i](options[i].x, options[i].y)
           continue
         }
         if (i === 'rotate') {
-          this.ctx.value[i](options[i])
+          this.ctx[i](options[i])
           continue
         }
-        this.ctx.value[i] = options[i]
+        this.ctx[i] = options[i]
       }
       this.styleOptions = options
     }
 
     draw (isPathStore) {
-      this.ctx.value.save()
-      this.ctx.value.beginPath()
+      this.ctx.save()
+      this.ctx.beginPath()
       isPathStore && this.setStyle(this.styleOptions)
       this.type === 'stroke'
-        ? this.ctx.value.stroke(this.path)
-        : this.ctx.value.fill(this.path)
-      this.ctx.value.closePath()
-      this.ctx.value.restore()
+        ? this.ctx.stroke(this.path)
+        : this.ctx.fill(this.path)
+      this.ctx.closePath()
+      this.ctx.restore()
     }
 
     savePath () {

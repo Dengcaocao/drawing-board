@@ -14,19 +14,18 @@ import ActionBar from '@/components/actionBar.vue'
 const contextStore = useContext()
 const { Draw } = useDraw()
 
-/**
- * @description: 初始化画布大小&获取画笔
- * @return {*}
- */
 const canvasRoot = ref()
 const cDom = ref()
-const ctx = ref()
 let drawMethod = null
+
+/**
+ * @description: 初始化画布大小
+ * @return {*}
+ */
 const initSize = () => {
   const { clientWidth, clientHeight } = document.documentElement
   cDom.value.width = clientWidth
   cDom.value.height = clientHeight
-  ctx.value = cDom.value.getContext('2d')
 }
 
 const isStart = ref(false)
@@ -78,7 +77,7 @@ const getPoint = () => {
 onMounted(() => {
   initSize()
   getPoint()
-  drawMethod = new Draw(cDom, ctx)
+  drawMethod = new Draw(cDom)
 })
 </script>
 
