@@ -26,10 +26,12 @@ export function useDraw() {
 
     arc (x, y) {
       this.path = new Path2D()
-      const distenceX = Math.abs(x - this.startPoint.x)
-      const distenceY = Math.abs(y - this.startPoint.y)
+      const distenceX = x - this.startPoint.x
+      const distenceY = y - this.startPoint.y
+      const centerX = this.startPoint.x + distenceX / 2
+      const centerY = this.startPoint.y + distenceY / 2
       const r = Math.pow(distenceX * distenceX + distenceY * distenceY, 1/2)
-      this.path.arc(this.startPoint.x, this.startPoint.y, r, 0, Math.PI * 2)
+      this.path.arc(centerX, centerY, r / 2, 0, Math.PI * 2)
       this.type = 'stroke'
       this.draw()
     }
