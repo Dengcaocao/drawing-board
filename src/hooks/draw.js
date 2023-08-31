@@ -99,22 +99,41 @@ export function useDraw() {
     }
 
     text (x, y, canvasRoot) {
-      // const path = new Path2D()
       const font = 32
       const textarea = document.createElement('textarea')
       textarea.cols = 1
       textarea.rows = 1
+      const styleOptions = {
+        font: `${font}px auto`,
+        textBaseline: 'middle'
+      }
+      this.setStyle(styleOptions)
       textarea.oninput = e => {
         this.clearCanvas()
-        // const fillWidth = ctx.value.measureText(textarea.value).width
+        this.pathStore.forEach(({ type, styleOptions, path }) => {
+          if (path.text) {
+            this.ctx.fillText(path.text, path.x, path.y)
+          } else {
+            this.type = type
+            this.styleOptions = styleOptions
+            this.path = path
+            this.draw(true)
+          }
+        })
         textarea.cols = e.target.value.length + 1
-        // textarea.style.width = `${fillWidth + 32}px`
-        this.ctx.font = `${font}px auto`
-        this.ctx.textBaseline = 'middle'
+        // 缩进了 2px
         this.ctx.fillText(e.target.value, x + 2, y)
-        // this.draw(path, 'fill')
       }
-      textarea.onblur = () => textarea.parentNode.removeChild(textarea)
+      textarea.onblur = e => {
+        this.type = 'fill'
+        this.path = {
+          x: x + 2,
+          y,
+          text: e.target.value
+        }
+        e.target.value && this.savePath()
+        textarea.parentNode.removeChild(textarea)
+      }
       textarea.style.cssText = `
         overflow: hidden;
         position: absolute;

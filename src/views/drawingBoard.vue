@@ -55,10 +55,14 @@ const handleMousemove = e => {
   const drayType = ['line', 'clear']
   drayType.includes(contextStore.ctx.mode) && drawMethod.savePath()
   drawMethod.pathStore.forEach(({ type, styleOptions, path }) => {
-    drawMethod.type = type
-    drawMethod.styleOptions = styleOptions
-    drawMethod.path = path
-    drawMethod.draw(true)
+    if (path.text) {
+      drawMethod.ctx.fillText(path.text, path.x, path.y)
+    } else {
+      drawMethod.type = type
+      drawMethod.styleOptions = styleOptions
+      drawMethod.path = path
+      drawMethod.draw(true)
+    }
   })
   drawMethod[contextStore.ctx.mode](clientX, clientY)
 }
