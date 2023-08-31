@@ -102,6 +102,7 @@ export function useDraw() {
       textarea.cols = 1
       textarea.rows = 1
       textarea.oninput = e => {
+        this.clearCanvas()
         // const fillWidth = ctx.value.measureText(textarea.value).width
         textarea.cols = e.target.value.length + 1
         // textarea.style.width = `${fillWidth + 32}px`

@@ -43,12 +43,13 @@ const handleMousedown = e => {
   const { clientX, clientY } = e
   drawMethod.init({ x: clientX, y: clientY })
   if (contextStore.ctx.mode === 'text') {
+    isStart.value = false
     drawMethod.text(clientX, clientY, canvasRoot)
   }
 }
 
 const handleMousemove = e => {
-  if (!isStart.value || contextStore.ctx.mode === 'text') return
+  if (!isStart.value) return
   const { clientX, clientY } = e
   drawMethod.clearCanvas()
   const drayType = ['line', 'clear']
