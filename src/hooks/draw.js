@@ -20,11 +20,13 @@ export function useDraw() {
     }
 
     line (x, y) {
+      this.ctx.beginPath()
       this.path = new Path2D()
       this.path.moveTo(this.lastPoint.x, this.lastPoint.y)
       this.path.lineTo(x, y)
       this.type = 'stroke'
       this.draw()
+      this.ctx.closePath()
       this.lastPoint = { x, y }
     }
 
@@ -194,16 +196,19 @@ export function useDraw() {
         }
         this.ctx[i] = options[i]
       }
-      this.styleOptions = options
+      this.styleOptions = { ...this.styleOptions, ...options }
     }
 
     draw (isPathStore) {
       this.ctx.save()
       this.ctx.beginPath()
-      isPathStore && this.setStyle(this.styleOptions)
-      this.ctx.strokeStyle = contextStore.ctx.color
-      this.ctx.fillStyle = contextStore.ctx.color
-      this.ctx.lineWidth = contextStore.ctx.lineWidth
+      isPathStore
+        ? this.setStyle(this.styleOptions)
+        : this.setStyle({
+            strokeStyle: contextStore.ctx.color,
+            fillStyle: contextStore.ctx.color,
+            lineWidth: contextStore.ctx.lineWidth
+          })
       this.type === 'stroke'
         ? this.ctx.stroke(this.path)
         : this.ctx.fill(this.path)
