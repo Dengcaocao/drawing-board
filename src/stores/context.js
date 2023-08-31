@@ -4,10 +4,14 @@ import { defineStore } from 'pinia'
 export const useContext = defineStore('ctx', () => {
   const ctx = reactive({
     // line | arc | rect | clear
-    mode: 'line'
+    mode: 'line',
+    color: '#000000',
+    lineWidth: 1
   })
 
-  const handleCtx = mode => ctx.mode = mode
+  const updateCtx = (fileds, value) => {
+    ctx[fileds] = value
+  }
 
-  return { ctx, handleCtx }
+  return { ctx, updateCtx }
 })

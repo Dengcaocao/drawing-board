@@ -1,3 +1,7 @@
+import { useContext } from '@/stores/context'
+
+const contextStore = useContext()
+
 export function useDraw() {
   class Draw {
     constructor (canvas) {
@@ -197,6 +201,9 @@ export function useDraw() {
       this.ctx.save()
       this.ctx.beginPath()
       isPathStore && this.setStyle(this.styleOptions)
+      this.ctx.strokeStyle = contextStore.ctx.color
+      this.ctx.fillStyle = contextStore.ctx.color
+      this.ctx.lineWidth = contextStore.ctx.lineWidth
       this.type === 'stroke'
         ? this.ctx.stroke(this.path)
         : this.ctx.fill(this.path)
