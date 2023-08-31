@@ -6,7 +6,7 @@
 </template>
 
 <script setup>
-import { onMounted, onUnmounted, ref } from 'vue'
+import { onMounted, onBeforeUnmount, ref } from 'vue'
 import { useContext } from '@/stores/context'
 import { useDraw } from '@/hooks/draw'
 import ActionBar from '@/components/actionBar.vue'
@@ -82,16 +82,16 @@ const addMouseEvent = () => {
 onMounted(() => {
   initSize()
   addMouseEvent()
-  window.addEventListener('reset', initSize)
+  window.addEventListener('resize', initSize)
   drawMethod = new Draw(cDom)
 })
 
-onUnmounted(() => {
+onBeforeUnmount(() => {
   cDom.value.removeEventListener('mousedown', handleMousedown)
   cDom.value.removeEventListener('mousemove', handleMousemove)
   cDom.value.removeEventListener('onmouseleave', handleMouseup)
   cDom.value.removeEventListener('mouseup', handleMouseup)
-  window.removeEventListener('reset', initSize)
+  window.removeEventListener('resize', initSize)
 })
 </script>
 
