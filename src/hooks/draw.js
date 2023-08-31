@@ -127,6 +127,7 @@ export function useDraw() {
             this.path = path
             this.draw(true)
           }
+          this.styleOptions = null
         })
         textarea.cols = e.target.value.length + 1
         // 缩进了 2px

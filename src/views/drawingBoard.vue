@@ -63,6 +63,7 @@ const handleMousemove = e => {
       drawMethod.path = path
       drawMethod.draw(true)
     }
+    drawMethod.styleOptions = null
   })
   drawMethod[contextStore.ctx.mode](clientX, clientY)
 }
