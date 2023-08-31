@@ -50,7 +50,7 @@ export function useDraw() {
           return {
             w: 1,
             h: h < 2 ? 2 : h,
-            incline: 2,
+            incline: 2, // 倾斜度
             size: h < 2 ? 2 : h / 2
           }
       
@@ -67,10 +67,13 @@ export function useDraw() {
     mark (x, y) {
       this.path = new Path2D()
       this.ctx.save()
-      // 计算长度
+      // 计算位移
       const distenceX = x - this.startPoint.x
       const distenceY = y - this.startPoint.y
-      const distence = Math.pow(distenceX * distenceX + distenceY * distenceY, 1/2) * (distenceX < 0 ? -1 : 1)
+      // 箭头方向
+      const direction = distenceX < 0 ? -1 : 1
+      // 计算长度
+      const distence = Math.pow(distenceX * distenceX + distenceY * distenceY, 1/2) * direction
       // 旋转角度
       let deg = Math.asin(Math.sin(distenceY / distence))
       const styleOptions = {
@@ -83,11 +86,11 @@ export function useDraw() {
       const obj = this.getMarkSize(Math.abs(distence))
       this.path.lineTo(0, 0)
       this.path.lineTo(0, -obj.w / 2)
-      this.path.lineTo(distence - obj.h, -obj.size)
-      this.path.lineTo(distence - obj.h - obj.incline, -obj.size * 2)
+      this.path.lineTo(distence - (obj.h * direction), -obj.size)
+      this.path.lineTo(distence - (obj.h * direction) - (obj.incline * direction), -obj.size * 2)
       this.path.lineTo(distence, 0)
-      this.path.lineTo(distence - obj.h - obj.incline, obj.size * 2)
-      this.path.lineTo(distence - obj.h, obj.size)
+      this.path.lineTo(distence - (obj.h * direction) - (obj.incline * direction), obj.size * 2)
+      this.path.lineTo(distence - (obj.h * direction), obj.size)
       this.path.lineTo(0, obj.w / 2)
       this.path.lineTo(0, 0)
       this.type = 'fill'
