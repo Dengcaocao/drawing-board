@@ -9,7 +9,59 @@
     <link rel="stylesheet" href="//at.alicdn.com/t/c/font_4225194_s3t8qjfas4.css">
   </head>
   <body>
-    <div id="app"></div>
+    <div id="app">
+      <svg
+        t="1693537685085"
+        class="icon"
+        viewBox="0 0 1024 1024"
+        version="1.1"
+        xmlns="http://www.w3.org/2000/svg"
+        p-id="1700"
+        xmlns:xlink="http://www.w3.org/1999/xlink"
+        width="200"
+        height="200">
+        <path
+          class="svg-path"
+          d="M929.81 298.52A383.71 383.71 0 0 0 576 64H160a32 32 0 0 0-32 32v832a32 32 0 0 0 32 32h352a447.66 447.66 0 0 0 448-448v-64a381.65 381.65 0 0 0-30.19-149.48zM576 128c176.45 0 320 143.55 320 320S752.45 768 576 768H448v-64h128a256 256 0 1 0 0-512H192v-64z m-32 256a96.11 96.11 0 0 1 96 96v32a128.14 128.14 0 0 1-128 128h-64V384zM192 256h384c105.87 0 192 86.13 192 192a192.06 192.06 0 0 1-92.1 163.9A190.79 190.79 0 0 0 704 512v-32c0-88.22-71.78-160-160-160H288a32 32 0 0 0-32 32v544h-64z m320 640H320V384h64v416a32 32 0 0 0 32 32h160a382.86 382.86 0 0 0 237-81.8C742.59 839 633.83 896 512 896z"
+          fill="#5C5C66"
+          p-id="1701">
+        </path>
+      </svg>
+    </div>
+    <style>
+      #app {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100vw;
+        height: 100vh;
+      }
+      .icon {
+        width: 20rem;
+        height: 20rem;
+        animation: move 3s infinite;
+      }
+      .svg-path {
+        fill: none;
+        stroke: #5C5C66;
+        stroke-width: 10;
+        stroke-linecap: round;
+      }
+      @keyframes move {
+        0% {
+          stroke-dasharray: 0 600px;
+        }
+        100% {
+          stroke-dasharray: 600px 0;
+        }
+      }
+      @media (max-width: 1024px) {
+        .icon {
+          width: 8rem;
+          height: 8rem;
+        }
+      }
+    </style>
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>
