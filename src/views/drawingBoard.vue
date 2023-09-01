@@ -16,7 +16,10 @@ const { Draw } = useDraw()
 
 const canvasRoot = ref()
 const cDom = ref()
+// 绘制实例
 let drawMethod = null
+// 记录操作时长
+let times = 0
 
 /**
  * @description: 初始化画布大小
@@ -28,8 +31,13 @@ const initSize = () => {
   cDom.value.height = clientHeight
 }
 
+// 控制事件
 const isStart = ref(false)
 
+/**
+ * @description: 保存canvas为图片
+ * @return {*}
+ */
 const handleDownload = () => {
   const url = cDom.value.toDataURL()
   const targ_a = document.createElement('a')
@@ -40,6 +48,7 @@ const handleDownload = () => {
 
 const handleMousedown = e => {
   isStart.value = true
+  times = new Date().getTime()
   const { clientX, clientY } = e
   drawMethod.init({ x: clientX, y: clientY })
   if (contextStore.ctx.mode === 'text') {
@@ -70,7 +79,8 @@ const handleMousemove = e => {
 
 const handleMouseup = () => {
   isStart.value = false
-  drawMethod.savePath()
+  new Date().getTime() - times > 200 && drawMethod.savePath()
+  times = 0
 }
 
 const addMouseEvent = () => {
