@@ -1,33 +1,35 @@
 <template>
-  <aside class="aside" ref="aside">
-    <input
-      class="line-width"
-      type="range"
-      v-model="stroe.ctx.lineWidth"
-      :max="maxWidth"
-      :style="{
-        width: rangeWidth,
-        'background-image': `linear-gradient(to right, #91caff ${stroe.ctx.lineWidth / maxWidth * 100 + '%'}, transparent ${stroe.ctx.lineWidth / 100 * 100 + '%'})`
-      }"
-      @change="handleChange('lineWidth', $event.target.value)">
-    <div
-      class="item iconfont icon-wangge"
-      :class="{'hide-grid': !stroe.isGrid}"
-      @click="stroe.updateIsGrid">
-    </div>
-    <div class="item">
+  <aside>
+    <div class="tabbar" ref="tabbar">
       <input
-        class="color"
-        type="color"
-        v-model="stroe.ctx.color"
-        @change="handleChange('color', $event.target.value)">
-    </div>
-    <div
-      class="item iconfont"
-      v-for="item in actionType"
-      :key="item.type"
-      :class="[item.icon, stroe.ctx.mode === item.type ? 'active' : '']"
-      @click.stop="handleChange('mode', item.type)">
+        class="line-width"
+        type="range"
+        v-model="stroe.ctx.lineWidth"
+        :max="maxWidth"
+        :style="{
+          width: rangeWidth,
+          'background-image': `linear-gradient(to right, #91caff ${stroe.ctx.lineWidth / maxWidth * 100 + '%'}, transparent ${stroe.ctx.lineWidth / 100 * 100 + '%'})`
+        }"
+        @change="handleChange('lineWidth', $event.target.value)">
+      <div
+        class="item iconfont icon-wangge"
+        :class="{'hide-grid': !stroe.isGrid}"
+        @click="stroe.updateIsGrid">
+      </div>
+      <div class="item">
+        <input
+          class="color"
+          type="color"
+          v-model="stroe.ctx.color"
+          @change="handleChange('color', $event.target.value)">
+      </div>
+      <div
+        class="item iconfont"
+        v-for="item in actionType"
+        :key="item.type"
+        :class="[item.icon, stroe.ctx.mode === item.type ? 'active' : '']"
+        @click.stop="handleChange('mode', item.type)">
+      </div>
     </div>
   </aside>
 </template>
@@ -45,7 +47,7 @@ const props = defineProps({
 
 const stroe = useContext()
 
-const aside = ref(null)
+const tabbar = ref(null)
 const maxWidth = ref(50)
 const actionType = reactive([
   {
@@ -79,8 +81,8 @@ const actionType = reactive([
 ])
 
 const rangeWidth = computed(() => {
-  if (!aside.value) return 0
-  return getComputedStyle(aside.value).height
+  if (!tabbar.value) return 0
+  return getComputedStyle(tabbar.value).height
 })
 
 const handleChange = (fileds, value) => {
@@ -90,7 +92,7 @@ const handleChange = (fileds, value) => {
 </script>
 
 <style>
-.aside {
+.tabbar {
   position: absolute;
   top: 50%;
   left: 20px;
@@ -105,7 +107,7 @@ const handleChange = (fileds, value) => {
               0 6px 16px 0px rgba(0, 0, 0, 0.08),
               0 9px 28px 8px rgba(0, 0, 0, 0.05);
 }
-.aside .item {
+.tabbar .item {
   width: 20px;
   height: 20px;
   padding: 4px;
@@ -113,10 +115,10 @@ const handleChange = (fileds, value) => {
   font-size: 20px;
   cursor: pointer;
 }
-.aside .item:not(:nth-child(2)) {
+.tabbar .item:not(:nth-child(2)) {
   margin-top: 15px;
 }
-.aside .item:hover,
+.tabbar .item:hover,
 .item.active {
   background-color: rgba(0, 0, 0, 0.03);
 }
