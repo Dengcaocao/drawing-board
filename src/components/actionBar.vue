@@ -1,6 +1,6 @@
 <template>
   <aside>
-    <div class="tabbar" ref="tabbar">
+    <div class="tabbar" :class="{collapsed: isCoolapsed}" ref="tabbar">
       <input
         class="line-width"
         type="range"
@@ -31,6 +31,11 @@
         @click.stop="handleChange('mode', item.type)">
       </div>
     </div>
+    <div
+      class="collapsed-btn iconfont icon-jiantou_yemian_xiangzuo_o"
+      :class="{overturn: isCoolapsed}"
+      @click="isCoolapsed = !isCoolapsed">
+    </div>
   </aside>
 </template>
 
@@ -47,6 +52,7 @@ const props = defineProps({
 
 const stroe = useContext()
 
+const isCoolapsed = ref(false)
 const tabbar = ref(null)
 const maxWidth = ref(50)
 const actionType = reactive([
@@ -71,6 +77,14 @@ const actionType = reactive([
     type: 'text'
   },
   {
+    icon: 'icon-chexiao',
+    type: 'revoke'
+  },
+  {
+    icon: 'icon-chexiao',
+    type: 'forward'
+  },
+  {
     icon: 'icon-rubber-full',
     type: 'clear'
   },
@@ -92,10 +106,35 @@ const handleChange = (fileds, value) => {
 </script>
 
 <style>
+.collapsed-btn {
+  position: fixed;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  font-size: 28px;
+  color: rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+  text-shadow: 0 0 6px rgba(0, 0, 0, 0.6);
+  animation: aCollapsed .5s infinite alternate;
+}
+.collapsed-btn.overturn {
+  transform: translateY(-50%) rotate(180deg);
+}
+.collapsed-btn:hover {
+  color: rgba(0, 0, 0, 0.6);
+}
+@keyframes aCollapsed {
+  0% {
+    left: 0;
+  }
+  100% {
+    left: -6px;
+  }
+}
 .tabbar {
   position: absolute;
   top: 50%;
-  left: 20px;
+  left: 30px;
   transform: translateY(-50%);
   display: flex;
   flex-direction: column;
@@ -103,9 +142,14 @@ const handleChange = (fileds, value) => {
   padding: 12px;
   border-radius: 10px;
   background-color: #fff;
+  transition: .2s;
   box-shadow: 0 3px 6px -4px rgba(0, 0, 0, 0.12),
               0 6px 16px 0px rgba(0, 0, 0, 0.08),
               0 9px 28px 8px rgba(0, 0, 0, 0.05);
+}
+.tabbar.collapsed {
+  left: 0;
+  transform: translate(-100%, -50%);
 }
 .tabbar .item {
   width: 20px;
