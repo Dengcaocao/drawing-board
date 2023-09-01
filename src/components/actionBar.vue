@@ -115,6 +115,7 @@ const handleChange = (fileds, value) => {
   color: rgba(0, 0, 0, 0.5);
   cursor: pointer;
   text-shadow: 0 0 6px rgba(0, 0, 0, 0.6);
+  transition: .2s;
   animation: aCollapsed .5s infinite alternate;
 }
 .collapsed-btn.overturn {
