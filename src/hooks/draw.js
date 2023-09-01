@@ -11,6 +11,8 @@ export function useDraw() {
       this.pathStore = []
       // 保存撤销的路径
       this.revokePathStore = []
+      // 保存当前图形的骨骼
+      this.bones = []
       this.type = 'stroke'
       this.path = new Path2D()
       this.contextOptions = null
@@ -40,8 +42,18 @@ export function useDraw() {
       const distenceY = y - this.startPoint.y
       const centerX = this.startPoint.x + distenceX / 2
       const centerY = this.startPoint.y + distenceY / 2
-      const r = Math.pow(distenceX * distenceX + distenceY * distenceY, 1/2)
-      this.path.arc(centerX, centerY, r / 2, 0, Math.PI * 2)
+      const r = Math.pow(distenceX * distenceX + distenceY * distenceY, 1/2) / 2
+      this.bones = [
+        [centerX - r, centerY - r],
+        [centerX, centerY - r],
+        [centerX + r, centerY - r],
+        [centerX + r, centerY],
+        [centerX + r, centerY + r],
+        [centerX, centerY + r],
+        [centerX - r, centerY + r],
+        [centerX - r, centerY]
+      ]
+      this.path.arc(centerX, centerY, r, 0, Math.PI * 2)
       this.type = 'stroke'
       this.draw()
     }
@@ -224,6 +236,40 @@ export function useDraw() {
       this.contextOptions = { ...this.contextOptions, ...options }
     }
 
+    // 绘制图形骨骼🦴
+    showBones (points) {
+      this.ctx.save()
+      this.ctx.beginPath()
+      for (let i = 0; i <= points.length; i++) {
+        // 取末形成闭合
+        const index = i % points.length
+        const [x, y] = points[index]
+        this.ctx.moveTo(x, y)
+        this.ctx.arc(x, y, 5, 0, Math.PI * 2)
+        this.ctx.moveTo(x, y)
+        const [nextX, nextY] = points[index + 1] || points[0]
+        this.ctx.lineTo(nextX, nextY)
+        this.ctx.fillStyle = '#fff'
+        this.ctx.stroke()
+        this.ctx.fill()
+      }
+      this.ctx.closePath()
+      this.ctx.restore()
+    }
+
+    checkPointInPath (x, y) {
+      for (let i = 0; i < this.pathStore.length; i++) {
+        const path = this.pathStore[i].path
+        const bones = this.pathStore[i].bones
+        if (this.ctx.isPointInPath(path, x, y)) {
+          this.clearCanvas()
+          this.reDraw()
+          this.showBones(bones)
+          return
+        }
+      }
+    }
+
     // 路径绘制
     draw (isPathStore) {
       this.ctx.save()
@@ -249,9 +295,11 @@ export function useDraw() {
       this.pathStore.push({
         type: this.type,
         contextOptions: this.contextOptions || {},
-        path: this.path
+        path: this.path,
+        bones: this.bones
       })
       this.contextOptions = null
+      this.bones = []
       this.type = 'stroke'
     }
 

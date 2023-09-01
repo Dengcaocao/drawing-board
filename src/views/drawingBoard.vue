@@ -95,6 +95,10 @@ const addMouseEvent = () => {
   cDom.value.addEventListener('mousemove', handleMousemove)
   cDom.value.addEventListener('onmouseleave', handleMouseup)
   cDom.value.addEventListener('mouseup', handleMouseup)
+  cDom.value.addEventListener('click', e => {
+    if (contextStore.ctx.mode !== 'pick') return
+    drawMethod.checkPointInPath(e.clientX, e.clientY)
+  })
   // 监听移动端
   cDom.value.addEventListener('touchstart', handleTouchstart)
   cDom.value.addEventListener('touchmove', handleTouchmove)
