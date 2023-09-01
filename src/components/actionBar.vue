@@ -90,6 +90,10 @@ const actionType = reactive([
     type: 'clear'
   },
   {
+    icon: 'icon-xuanze',
+    type: 'pick'
+  },
+  {
     icon: 'icon-xiazai-',
     type: 'download'
   }
