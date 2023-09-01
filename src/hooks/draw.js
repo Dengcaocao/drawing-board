@@ -115,17 +115,7 @@ export function useDraw() {
       })
       textarea.oninput = e => {
         this.clearCanvas()
-        this.pathStore.forEach(({ type, contextOptions, path }) => {
-          if (path.text) {
-            this.ctx.fillText(path.text, path.x, path.y)
-          } else {
-            this.type = type
-            this.contextOptions = contextOptions
-            this.path = path
-            this.draw(true)
-          }
-          this.contextOptions = null
-        })
+        this.reDraw()
         textarea.cols = e.target.value.length + 1
         // 缩进了 2px
         this.ctx.fillText(e.target.value, x + 2, y)
@@ -160,6 +150,22 @@ export function useDraw() {
       canvasRoot.value.appendChild(textarea)
     }
 
+    // 重新绘制 pathStore 中的路径
+    reDraw () {
+      this.pathStore.forEach(({ type, contextOptions, path }) => {
+        if (path.text) {
+          this.ctx.fillText(path.text, path.x, path.y)
+        } else {
+          this.type = type
+          this.contextOptions = contextOptions
+          this.path = path
+          this.draw(true)
+        }
+        this.contextOptions = null
+      })
+    }
+
+    // 橡皮擦
     clear (x, y) {
       this.ctx.save()
       this.path = new Path2D()
