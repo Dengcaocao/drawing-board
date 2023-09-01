@@ -7,7 +7,10 @@ export function useDraw() {
     constructor (canvas) {
       this.canvas = canvas
       this.ctx = canvas.value.getContext('2d')
+      // 保存绘制路径
       this.pathStore = []
+      // 保存撤销的路径
+      this.revokePathStore = []
       this.type = 'stroke'
       this.path = new Path2D()
       this.contextOptions = null
@@ -183,6 +186,23 @@ export function useDraw() {
       this.draw()
       this.lastPoint = { x, y }
       this.ctx.restore()
+    }
+
+    // 撤销
+    revoke () {
+      if (!this.pathStore.length) return
+      this.clearCanvas()
+      const delPath = this.pathStore.pop()
+      this.revokePathStore.push(delPath)
+      this.reDraw()
+    }
+    // 前进
+    forward () {
+      if (!this.revokePathStore.length) return
+      this.clearCanvas()
+      const lastPath = this.revokePathStore.pop()
+      this.pathStore.push(lastPath)
+      this.reDraw()
     }
 
     // 清除画布

@@ -1,7 +1,7 @@
 <template>
   <main ref="canvasRoot">
     <canvas ref="cDom" class="canvas" :class="{'show-grid': contextStore.isGrid}"></canvas>
-    <action-bar :handleDownload="handleDownload" />
+    <action-bar :actions="actions" />
   </main>
 </template>
 
@@ -16,6 +16,7 @@ const { Draw } = useDraw()
 
 const canvasRoot = ref()
 const cDom = ref()
+const actions = ref({})
 // 绘制实例
 let drawMethod = null
 // 记录操作时长
@@ -46,6 +47,12 @@ const handleDownload = () => {
   targ_a.setAttribute('download', Math.random().toString(16).slice(-6))
   targ_a.click()
 }
+
+const getActions = () => ({
+  revoke: () => drawMethod.revoke(),
+  forward: () => drawMethod.forward(),
+  download: handleDownload
+})
 
 // pc 事件
 const handleMousedown = e => {
@@ -98,6 +105,7 @@ onMounted(() => {
   drawMethod = new Draw(cDom)
   initSize()
   addMouseEvent()
+  actions.value = getActions()
   window.addEventListener('resize', initSize)
 })
 

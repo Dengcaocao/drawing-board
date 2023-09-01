@@ -28,6 +28,7 @@
         v-for="item in actionType"
         :key="item.type"
         :class="[item.icon, stroe.ctx.mode === item.type ? 'active' : '']"
+        :style="{transform: item.type === 'forward' && 'scaleX(-1)'}"
         @click.stop="handleChange('mode', item.type)">
       </div>
     </div>
@@ -44,8 +45,8 @@ import { computed, reactive, ref } from 'vue'
 import { useContext } from '@/stores/context'
 
 const props = defineProps({
-  handleDownload: {
-    type: Function,
+  actions: {
+    type: Object,
     required: true
   }
 })
@@ -100,7 +101,9 @@ const rangeWidth = computed(() => {
 })
 
 const handleChange = (fileds, value) => {
-  if (value === 'download') return props.handleDownload()
+  if (['revoke', 'forward', 'download'].includes(value)) {
+    return props.actions[value]()
+  }
   stroe.updateCtx(fileds, value)
 }
 </script>
