@@ -46,6 +46,7 @@ const handleDownload = () => {
   targ_a.click()
 }
 
+// pc 事件
 const handleMousedown = e => {
   isStart.value = true
   times = new Date().getTime()
@@ -83,11 +84,23 @@ const handleMouseup = () => {
   times = 0
 }
 
+// 移动端事件
+const handleTouchstart = e => handleMousedown(e.changedTouches[0])
+
+const handleTouchmove = e => handleMousemove(e.changedTouches[0])
+
+const handleTouchend = handleMouseup
+
 const addMouseEvent = () => {
+  // 监听pc
   cDom.value.addEventListener('mousedown', handleMousedown)
   cDom.value.addEventListener('mousemove', handleMousemove)
   cDom.value.addEventListener('onmouseleave', handleMouseup)
   cDom.value.addEventListener('mouseup', handleMouseup)
+  // 监听移动端
+  cDom.value.addEventListener('touchstart', handleTouchstart)
+  cDom.value.addEventListener('touchmove', handleTouchmove)
+  cDom.value.addEventListener('touchend', handleTouchend)
 }
 
 onMounted(() => {
@@ -98,10 +111,14 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
+  // 移除监听
   cDom.value.removeEventListener('mousedown', handleMousedown)
   cDom.value.removeEventListener('mousemove', handleMousemove)
   cDom.value.removeEventListener('onmouseleave', handleMouseup)
   cDom.value.removeEventListener('mouseup', handleMouseup)
+  cDom.value.removeEventListener('touchstart', handleTouchstart)
+  cDom.value.removeEventListener('touchmove', handleTouchmove)
+  cDom.value.removeEventListener('touchend', handleTouchend)
   window.removeEventListener('resize', initSize)
 })
 </script>
