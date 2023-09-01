@@ -29,6 +29,7 @@ const initSize = () => {
   const { clientWidth, clientHeight } = document.documentElement
   cDom.value.width = clientWidth
   cDom.value.height = clientHeight
+  drawMethod.reDraw()
 }
 
 // 控制事件
@@ -94,10 +95,10 @@ const addMouseEvent = () => {
 }
 
 onMounted(() => {
+  drawMethod = new Draw(cDom)
   initSize()
   addMouseEvent()
   window.addEventListener('resize', initSize)
-  drawMethod = new Draw(cDom)
 })
 
 onBeforeUnmount(() => {

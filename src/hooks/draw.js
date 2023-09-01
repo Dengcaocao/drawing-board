@@ -13,6 +13,7 @@ export function useDraw() {
       this.contextOptions = null
     }
 
+    // 记录坐标
     init (startPoint) {
       this.startPoint = startPoint
       this.lastPoint = startPoint
@@ -51,6 +52,7 @@ export function useDraw() {
       this.draw()
     }
 
+    // 获取箭头大小信息
     getMarkSize (distence) {
       const h = distence / 4
       switch (true) {
@@ -183,10 +185,12 @@ export function useDraw() {
       this.ctx.restore()
     }
 
+    // 清除画布
     clearCanvas () {
       this.ctx.clearRect(0, 0, this.canvas.value.width, this.canvas.value.height)
     }
 
+    // 设置画笔样式
     setContextOptions (options) {
       for (let i in options) {
         if (i === 'translate') {
@@ -202,6 +206,7 @@ export function useDraw() {
       this.contextOptions = { ...this.contextOptions, ...options }
     }
 
+    // 路径绘制
     draw (isPathStore) {
       this.ctx.save()
       this.ctx.beginPath()
