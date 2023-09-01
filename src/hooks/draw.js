@@ -175,8 +175,6 @@ export function useDraw() {
       this.ctx.save()
       this.path = new Path2D()
       this.setContextOptions({
-        lineWidth: 20,
-        lineCap: 'round',
         globalCompositeOperation: 'destination-out'
       })
 
@@ -235,7 +233,10 @@ export function useDraw() {
         : this.setContextOptions({
             strokeStyle: contextStore.ctx.color,
             fillStyle: contextStore.ctx.color,
-            lineWidth: contextStore.ctx.lineWidth
+            lineWidth: (contextStore.ctx.mode === 'clear' && contextStore.ctx.lineWidth < 10)
+              ? 10
+              : contextStore.ctx.lineWidth,
+            lineCap: contextStore.ctx.lineCap
           })
       this.type === 'stroke'
         ? this.ctx.stroke(this.path)

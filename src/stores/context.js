@@ -7,7 +7,8 @@ export const useContext = defineStore('ctx', () => {
     // line | arc | rect | clear
     mode: 'line',
     color: '#000000',
-    lineWidth: 1
+    lineWidth: 1,
+    lineCap: 'round'
   })
 
   const updateIsGrid = () => isGrid.value = !isGrid.value
