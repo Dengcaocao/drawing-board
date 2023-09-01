@@ -271,7 +271,9 @@ export function useDraw() {
         this.ctx.save()
         this.setContextOptions({
           ...contextOptions,
-          fillStyle: '#fff'
+          lineWidth: 1,
+          fillStyle: '#fff',
+          strokeStyle: 'rgba(0, 0, 0, .8)'
         })
         this.ctx.moveTo(x, y)
         this.ctx.arc(x, y, 3, 0, Math.PI * 2)
