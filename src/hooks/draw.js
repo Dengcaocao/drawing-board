@@ -43,6 +43,7 @@ export function useDraw() {
       const centerX = this.startPoint.x + distenceX / 2
       const centerY = this.startPoint.y + distenceY / 2
       const r = Math.pow(distenceX * distenceX + distenceY * distenceY, 1/2) / 2
+      // 记录骨骼信息
       this.bones = [
         [centerX - r, centerY - r],
         [centerX, centerY - r],
@@ -60,9 +61,21 @@ export function useDraw() {
 
     rect (x, y) {
       this.path = new Path2D()
-      const distenceX = x - this.startPoint.x
-      const distenceY = y - this.startPoint.y
-      this.path.rect(this.startPoint.x, this.startPoint.y, distenceX, distenceY)
+      const { x: spX, y: spY } = this.startPoint
+      const distenceX = x - spX
+      const distenceY = y - spY
+      // 记录骨骼信息
+      this.bones = [
+        [spX, spY],
+        [spX + distenceX / 2, spY],
+        [spX + distenceX, spY],
+        [spX + distenceX, spY + distenceY / 2],
+        [spX + distenceX, spY + distenceY],
+        [spX + distenceX / 2, spY + distenceY],
+        [spX, spY + distenceY],
+        [spX, spY + distenceY / 2],
+      ]
+      this.path.rect(spX, spY, distenceX, distenceY)
       this.type = 'stroke'
       this.draw()
     }
@@ -116,6 +129,17 @@ export function useDraw() {
       this.path.lineTo(distence - (obj.h * direction), obj.size)
       this.path.lineTo(0, obj.w / 2)
       this.path.lineTo(0, 0)
+      // 记录骨骼信息
+      this.bones = [
+        [0, -obj.size * 2],
+        [distence / 2, -obj.size * 2],
+        [distence, -obj.size * 2],
+        [distence, 0],
+        [distence, obj.size * 2],
+        [distence / 2, obj.size * 2],
+        [0, obj.size * 2],
+        [0, 0],
+      ]
       this.type = 'fill'
       this.draw()
       this.ctx.restore()
@@ -237,36 +261,40 @@ export function useDraw() {
     }
 
     // 绘制图形骨骼🦴
-    showBones (points) {
+    showBones (points, contextOptions) {
       this.ctx.save()
       this.ctx.beginPath()
       for (let i = 0; i <= points.length; i++) {
         // 取末形成闭合
         const index = i % points.length
         const [x, y] = points[index]
+        this.ctx.save()
+        this.setContextOptions({
+          ...contextOptions,
+          fillStyle: '#fff'
+        })
         this.ctx.moveTo(x, y)
-        this.ctx.arc(x, y, 5, 0, Math.PI * 2)
+        this.ctx.arc(x, y, 3, 0, Math.PI * 2)
         this.ctx.moveTo(x, y)
         const [nextX, nextY] = points[index + 1] || points[0]
         this.ctx.lineTo(nextX, nextY)
-        this.ctx.fillStyle = '#fff'
         this.ctx.stroke()
         this.ctx.fill()
+        this.ctx.restore()
       }
+      this.contextOptions = null
       this.ctx.closePath()
       this.ctx.restore()
     }
 
     checkPointInPath (x, y) {
+      this.clearCanvas()
+      this.reDraw()
       for (let i = 0; i < this.pathStore.length; i++) {
         const path = this.pathStore[i].path
         const bones = this.pathStore[i].bones
-        if (this.ctx.isPointInPath(path, x, y)) {
-          this.clearCanvas()
-          this.reDraw()
-          this.showBones(bones)
-          return
-        }
+        // BUG 线段绘制的闭合路径无法判断
+        if (this.ctx.isPointInPath(path, x, y)) this.showBones(bones, this.pathStore[i].contextOptions)
       }
     }
 
