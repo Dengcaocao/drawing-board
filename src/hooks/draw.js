@@ -13,12 +13,15 @@ export function useDraw() {
       this.revokePathStore = []
       // 保存当前图形的骨骼
       this.bones = []
-      this.type = 'stroke'
+      // 绘制路径
       this.path = new Path2D()
+      // 绘制类型 fill | stroke
+      this.type = 'stroke'
+      // 画笔样式
       this.contextOptions = null
     }
 
-    // 记录坐标
+    // 初始化坐标点
     init (startPoint) {
       this.startPoint = startPoint
       this.lastPoint = startPoint
@@ -26,13 +29,11 @@ export function useDraw() {
     }
 
     line (x, y) {
-      this.ctx.beginPath()
       this.path = new Path2D()
       this.path.moveTo(this.lastPoint.x, this.lastPoint.y)
       this.path.lineTo(x, y)
       this.type = 'stroke'
       this.draw()
-      this.ctx.closePath()
       this.lastPoint = { x, y }
     }
 
