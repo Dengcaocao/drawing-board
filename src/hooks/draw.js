@@ -21,13 +21,21 @@ export function useDraw() {
       this.contextOptions = null
     }
 
-    // 初始化坐标点
+    /**
+     * 初始化坐标点
+     * @param {*} startPoint 鼠标点击的位置
+     */
     init (startPoint) {
       this.startPoint = startPoint
       this.lastPoint = startPoint
       this.ctx.moveTo(startPoint.x, startPoint.y)
     }
 
+    /**
+     * 线段绘制
+     * @param {*} x 鼠标移动时的x坐标
+     * @param {*} y 鼠标移动时的y坐标
+     */
     line (x, y) {
       this.path = new Path2D()
       this.path.moveTo(this.lastPoint.x, this.lastPoint.y)
@@ -37,6 +45,11 @@ export function useDraw() {
       this.lastPoint = { x, y }
     }
 
+    /**
+     * 圆形绘制
+     * @param {*} x 鼠标移动时的x坐标
+     * @param {*} y 鼠标移动时的y坐标
+     */
     arc (x, y) {
       this.path = new Path2D()
       const distenceX = x - this.startPoint.x
@@ -60,6 +73,11 @@ export function useDraw() {
       this.draw()
     }
 
+    /**
+     * 矩形绘制
+     * @param {*} x 鼠标移动时的x坐标
+     * @param {*} y 鼠标移动时的y坐标
+     */
     rect (x, y) {
       this.path = new Path2D()
       const { x: spX, y: spY } = this.startPoint
@@ -81,7 +99,11 @@ export function useDraw() {
       this.draw()
     }
 
-    // 获取箭头大小信息
+    /**
+     * 获取箭头大小信息
+     * @param {*} distence 长度
+     * @returns 
+     */
     getMarkSize (distence) {
       const h = distence / 4
       switch (true) {
@@ -103,6 +125,11 @@ export function useDraw() {
       }
     }
 
+    /**
+     * 箭头绘制
+     * @param {*} x 鼠标移动时的x坐标
+     * @param {*} y 鼠标移动时的y坐标
+     */
     mark (x, y) {
       this.ctx.save()
       this.path = new Path2D()
@@ -146,6 +173,12 @@ export function useDraw() {
       this.ctx.restore()
     }
 
+    /**
+     * 文本绘制
+     * @param {*} x 鼠标移动时的x坐标
+     * @param {*} y 鼠标移动时的y坐标
+     * @param {*} canvasRoot canvas 的父级节点
+     */
     text (x, y, canvasRoot) {
       const font = 32
       const textarea = document.createElement('textarea')
@@ -192,7 +225,9 @@ export function useDraw() {
       canvasRoot.value.appendChild(textarea)
     }
 
-    // 重新绘制 pathStore 中的路径
+    /**
+     * 重新绘制 pathStore 中的路径
+     */
     reDraw () {
       this.pathStore.forEach(({ type, contextOptions, path }) => {
         if (path.text) {
@@ -207,7 +242,11 @@ export function useDraw() {
       })
     }
 
-    // 橡皮擦
+    /**
+     * 橡皮擦
+     * @param {*} x 鼠标移动时的x坐标
+     * @param {*} y 鼠标移动时的y坐标
+     */
     clear (x, y) {
       this.ctx.save()
       this.path = new Path2D()
@@ -223,7 +262,9 @@ export function useDraw() {
       this.ctx.restore()
     }
 
-    // 撤销
+    /**
+     * 撤销上一次操作
+     */
     revoke () {
       if (!this.pathStore.length) return
       this.clearCanvas()
@@ -231,7 +272,10 @@ export function useDraw() {
       this.revokePathStore.push(delPath)
       this.reDraw()
     }
-    // 前进
+
+    /**
+     * 取消撤销
+     */
     forward () {
       if (!this.revokePathStore.length) return
       this.clearCanvas()
@@ -245,7 +289,10 @@ export function useDraw() {
       this.ctx.clearRect(0, 0, this.canvas.value.width, this.canvas.value.height)
     }
 
-    // 设置画笔样式
+    /**
+     * 设置画笔样式
+     * @param {*} options 画笔属性键值对 
+     */
     setContextOptions (options) {
       for (let i in options) {
         if (i === 'translate') {
@@ -329,7 +376,10 @@ export function useDraw() {
       }
     }
 
-    // 路径绘制
+    /**
+     * 路径绘制
+     * @param {*} isPathStore 是否路径库中的路径
+     */
     draw (isPathStore) {
       this.ctx.save()
       this.ctx.beginPath()
@@ -350,6 +400,9 @@ export function useDraw() {
       this.ctx.restore()
     }
 
+    /**
+     * 将当前路径保存到pathStore中
+     */
     savePath () {
       if (!this.path) return
       this.pathStore.push({
@@ -358,10 +411,10 @@ export function useDraw() {
         path: this.path,
         bones: this.bones
       })
-      this.contextOptions = null
       this.path = null
       this.bones = []
       this.type = 'stroke'
+      this.contextOptions = null
     }
 
   }
