@@ -261,14 +261,18 @@ export function useDraw() {
       this.contextOptions = { ...this.contextOptions, ...options }
     }
 
-    // 绘制图形骨骼🦴
-    showBones (points, contextOptions) {
+    /**
+     * 绘制图形骨骼🦴
+     * @param {*} bones 骨骼位置[]
+     * @param {*} contextOptions 画笔样式
+     */
+    showBones (bones, contextOptions) {
       this.ctx.save()
       this.ctx.beginPath()
-      for (let i = 0; i <= points.length; i++) {
+      for (let i = 0; i <= bones.length; i++) {
         // 取末形成闭合
-        const index = i % points.length
-        const [x, y] = points[index]
+        const index = i % bones.length
+        const [x, y] = bones[index]
         this.ctx.save()
         this.setContextOptions({
           ...contextOptions,
@@ -279,7 +283,7 @@ export function useDraw() {
         this.ctx.moveTo(x, y)
         this.ctx.arc(x, y, 3, 0, Math.PI * 2)
         this.ctx.moveTo(x, y)
-        const [nextX, nextY] = points[index + 1] || points[0]
+        const [nextX, nextY] = bones[index + 1] || bones[0]
         this.ctx.lineTo(nextX, nextY)
         this.ctx.stroke()
         this.ctx.fill()
@@ -290,14 +294,38 @@ export function useDraw() {
       this.ctx.restore()
     }
 
-    checkPointInPath (x, y) {
+    /**
+     * 判断点是否在路径上
+     * @param {*} movePoint 鼠标移动的点位信息
+     * @returns 
+     */
+    checkPointInPath (movePoint) {
       this.clearCanvas()
       this.reDraw()
+      // 计算每次偏移的距离
+      const translatePoint = movePoint
+        ? { x: movePoint.x - this.lastPoint.x, y: movePoint.y - this.lastPoint.y }
+        : { x: 0, y: 0 }
+      movePoint && (this.lastPoint = movePoint)
       for (let i = 0; i < this.pathStore.length; i++) {
         const path = this.pathStore[i].path
-        const bones = this.pathStore[i].bones
-        // BUG 线段绘制的闭合路径无法判断
-        if (this.ctx.isPointInPath(path, x, y)) this.showBones(bones, this.pathStore[i].contextOptions)
+        const contextOptions = this.pathStore[i].contextOptions
+        // 计算最终鼠标点击的位置
+        const cot = contextOptions.translate || { x: 0, y: 0 }
+        const x = movePoint ? movePoint.x - cot.x : this.startPoint.x - cot.x
+        const y = movePoint ? movePoint.y - cot.y : this.startPoint.y - cot.y
+        // 判断路径
+        const isPointInPath = this.ctx.isPointInPath(path, x, y)
+        if (isPointInPath) {
+          const bones = this.pathStore[i].bones
+          // 设置新的坐标信息
+          contextOptions.translate = {
+            x: movePoint ? cot.x + translatePoint.x : cot.x,
+            y: movePoint ? cot.y + translatePoint.y : cot.y
+          }
+          this.pathStore[i].contextOptions = contextOptions
+          return this.showBones(bones, contextOptions)
+        }
       }
     }
 
@@ -323,6 +351,7 @@ export function useDraw() {
     }
 
     savePath () {
+      if (!this.path) return
       this.pathStore.push({
         type: this.type,
         contextOptions: this.contextOptions || {},
@@ -330,6 +359,7 @@ export function useDraw() {
         bones: this.bones
       })
       this.contextOptions = null
+      this.path = null
       this.bones = []
       this.type = 'stroke'
     }

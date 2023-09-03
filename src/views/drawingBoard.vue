@@ -65,14 +65,16 @@ const handleMousedown = e => {
     drawMethod.text(clientX, clientY, canvasRoot)
   }
   if (contextStore.ctx.mode === 'pick') {
-    isStart.value = false
-    drawMethod.checkPointInPath(e.clientX, e.clientY)
+    drawMethod.checkPointInPath()
   }
 }
 
 const handleMousemove = e => {
   if (!isStart.value) return
   const { clientX, clientY } = e
+  if (contextStore.ctx.mode === 'pick') {
+    return drawMethod.checkPointInPath({ x: clientX, y: clientY })
+  }
   drawMethod.clearCanvas()
   const drayType = ['line', 'clear']
   drayType.includes(contextStore.ctx.mode) && drawMethod.savePath()
@@ -82,7 +84,7 @@ const handleMousemove = e => {
 
 const handleMouseup = () => {
   isStart.value = false
-  new Date().getTime() - times > 200 && drawMethod.savePath()
+  new Date().getTime() - times > 200 && contextStore.ctx.mode !== 'pick' && drawMethod.savePath()
   times = 0
 }
 
