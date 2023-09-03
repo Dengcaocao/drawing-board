@@ -354,7 +354,8 @@ export function useDraw() {
         ? { x: movePoint.x - this.lastPoint.x, y: movePoint.y - this.lastPoint.y }
         : { x: 0, y: 0 }
       movePoint && (this.lastPoint = movePoint)
-      for (let i = 0; i < this.pathStore.length; i++) {
+      // 考虑层级关系，越上面的越先被选取
+      for (let i = this.pathStore.length - 1; i >= 0; i--) {
         const path = this.pathStore[i].path
         const contextOptions = this.pathStore[i].contextOptions
         // 计算最终鼠标点击的位置
