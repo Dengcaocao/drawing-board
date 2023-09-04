@@ -364,7 +364,9 @@ export function useDraw() {
         const y = movePoint ? movePoint.y - cot.y : this.startPoint.y - cot.y
         // 判断路径
         const isPointInPath = this.ctx.isPointInPath(path, x, y)
-        if (isPointInPath) {
+        // 点击时设置骨架状态
+        if (!movePoint) this.pathStore[i].isShowBones = isPointInPath
+        if (this.pathStore[i].isShowBones) {
           const bones = this.pathStore[i].bones
           // 设置新的坐标信息
           contextOptions.translate = {
@@ -410,7 +412,8 @@ export function useDraw() {
         type: this.type,
         contextOptions: this.contextOptions || {},
         path: this.path,
-        bones: this.bones
+        bones: this.bones,
+        isShowBones: false // 是否展示骨骼
       })
       this.path = null
       this.bones = []
