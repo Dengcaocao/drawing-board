@@ -168,7 +168,7 @@ export function useDraw() {
         [distence, obj.size * 2],
         [distence / 2, obj.size * 2],
         [0, obj.size * 2],
-        [0, 0],
+        [0, 0]
       ]
       this.type = 'fill'
       this.draw()
@@ -184,8 +184,11 @@ export function useDraw() {
     text (x, y, canvasRoot) {
       this.isCreateInput = !this.isCreateInput
       if (!this.isCreateInput) return
-      const font = 28
       const input = document.createElement('input')
+      const font = 28
+      // 记录骨骼信息，因为基线对齐是 middle 方式，y轴需要减去自身的一半
+      const realityY = y - font / 2
+      let drawWidth = 0
       // 禁用拼写检查
       input.spellcheck = false
       // 等待添加到 document 中后再聚焦
@@ -201,13 +204,27 @@ export function useDraw() {
           fillStyle: contextStore.ctx.color
         })
         // 获取绘制的宽度
-        const drawWidth = this.ctx.measureText(e.target.value).width
+        drawWidth = this.ctx.measureText(e.target.value).width
         input.style.width = `${drawWidth}px`
         input.style.textIndent = `${drawWidth}px`
+        this.bones = [
+          [x, realityY],
+          [x + drawWidth / 2, realityY],
+          [x + drawWidth, realityY],
+          [x + drawWidth, y],
+          [x + drawWidth, y + font / 2],
+          [x + drawWidth / 2, y + font / 2],
+          [x, y + font / 2],
+          [x, y]
+        ]
         this.ctx.fillText(e.target.value, x, y)
       }
       input.onblur = e => {
-        this.path = { x, y, text: e.target.value }
+        this.isCreateInput = false
+         // 创建一个和文本宽高的矩形路径，用于拖拽判断
+        const path = new Path2D()
+        path.rect(x, realityY, drawWidth, font)
+        this.path = { x, y, text: e.target.value, vPath: path }
         this.ctx.restore()
         e.target.value && this.savePath()
         input.parentNode.removeChild(input)
@@ -374,7 +391,7 @@ export function useDraw() {
         const x = movePoint ? movePoint.x - cot.x : this.startPoint.x - cot.x
         const y = movePoint ? movePoint.y - cot.y : this.startPoint.y - cot.y
         // 判断路径
-        const isPointInPath = this.ctx.isPointInPath(path, x, y)
+        const isPointInPath = this.ctx.isPointInPath(path.text ? path.vPath : path, x, y)
         // 点击时设置骨架状态
         if (!movePoint) this.pathStore[i].isShowBones = isPointInPath
         if (this.pathStore[i].isShowBones) {
