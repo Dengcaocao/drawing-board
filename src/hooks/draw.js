@@ -7,6 +7,8 @@ export function useDraw() {
     constructor (canvas) {
       this.canvas = canvas
       this.ctx = canvas.value.getContext('2d')
+      // 保存文本绘制时创建的input，防止创建多个
+      this.isCreateInput = false
       // 保存绘制路径
       this.pathStore = []
       // 保存撤销的路径
@@ -180,49 +182,55 @@ export function useDraw() {
      * @param {*} canvasRoot canvas 的父级节点
      */
     text (x, y, canvasRoot) {
-      const font = 32
-      const textarea = document.createElement('textarea')
-      textarea.cols = 1
-      textarea.rows = 1
-      this.setContextOptions({
-        font: `${font}px auto`,
-        textBaseline: 'middle'
-      })
-      textarea.oninput = e => {
+      this.isCreateInput = !this.isCreateInput
+      if (!this.isCreateInput) return
+      const font = 28
+      const input = document.createElement('input')
+      // 禁用拼写检查
+      input.spellcheck = false
+      // 等待添加到 document 中后再聚焦
+      setTimeout(() => input.focus(), 0)
+      this.type = 'fill'
+      this.ctx.save()
+      input.oninput = e => {
         this.clearCanvas()
         this.reDraw()
-        textarea.cols = e.target.value.length + 1
-        // 缩进了 2px
-        this.ctx.fillText(e.target.value, x + 2, y)
+        this.setContextOptions({
+          font: `${font}px auto`,
+          textBaseline: 'middle',
+          fillStyle: contextStore.ctx.color
+        })
+        // 获取绘制的宽度
+        const drawWidth = this.ctx.measureText(e.target.value).width
+        input.style.width = `${drawWidth}px`
+        input.style.textIndent = `${drawWidth}px`
+        this.ctx.fillText(e.target.value, x, y)
       }
-      textarea.onblur = e => {
-        this.type = 'fill'
-        this.path = {
-          x: x + 2,
-          y,
-          text: e.target.value
-        }
+      input.onblur = e => {
+        this.path = { x, y, text: e.target.value }
+        this.ctx.restore()
         e.target.value && this.savePath()
-        textarea.parentNode.removeChild(textarea)
+        input.parentNode.removeChild(input)
       }
-      textarea.style.cssText = `
-        overflow: hidden;
+      // 输入框样式
+      input.style.cssText = `
         position: absolute;
-        top: ${y - font / 2}px;
-        left: ${x}px;
+        top: ${y - font / 2 - 6}px;
+        left: ${x - 6}px;
         height: ${font}px;
-        line-height: ${font}px;
-        background-color: transparent;
-        outline: none;
-        resize: none;
-        border: 1px solid #000;
+        width: ${font}px;
+        min-width: ${font}px;
+        padding: 4px;
         font-size: ${font}px;
-        white-space: pre-wrap;
-        text-indent: 2px;
         color: transparent;
-        caret-color: #000;
+        caret-color: ${contextStore.ctx.color};
+        outline: none;
+        border-radius: 4px;
+        border: 2px solid ${contextStore.ctx.color};
+        background-color: transparent;
+        box-shadow: inset 0px 0px 5px 2px rgba(0, 0, 0, 0);
       `
-      canvasRoot.value.appendChild(textarea)
+      canvasRoot.value.appendChild(input)
     }
 
     /**
@@ -231,7 +239,10 @@ export function useDraw() {
     reDraw () {
       this.pathStore.forEach(({ type, contextOptions, path }) => {
         if (path.text) {
+          this.ctx.save()
+          this.setContextOptions(contextOptions)
           this.ctx.fillText(path.text, path.x, path.y)
+          this.ctx.restore()
         } else {
           this.type = type
           this.contextOptions = contextOptions
