@@ -143,7 +143,10 @@ export function useDraw() {
       // 计算长度
       const distence = Math.pow(distenceX * distenceX + distenceY * distenceY, 1/2) * direction
       // 旋转角度
-      let deg = Math.asin(Math.sin(distenceY / distence))
+      let deg = Math.atan2(distenceY, distenceX)
+      if (direction === -1) {
+        deg = distenceY < 0 ? -Math.PI + deg : Math.PI + deg
+      }
       this.setContextOptions({
         translate: { x: this.startPoint.x, y: this.startPoint.y },
         rotate: deg
