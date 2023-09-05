@@ -72,6 +72,7 @@ export function useDraw() {
       ]
       this.path.arc(centerX, centerY, r, 0, Math.PI * 2)
       this.type = 'stroke'
+      this.rotatePoint = { x: centerX, y: centerY }
       this.draw()
     }
 
@@ -98,6 +99,7 @@ export function useDraw() {
       ]
       this.path.rect(spX, spY, distenceX, distenceY)
       this.type = 'stroke'
+      this.rotatePoint = { x: distenceX / 2, y: distenceY / 2 }
       this.draw()
     }
 
@@ -174,6 +176,7 @@ export function useDraw() {
         [0, 0]
       ]
       this.type = 'fill'
+      this.rotatePoint = { x: 0, y: 0 }
       this.draw()
       this.ctx.restore()
     }
@@ -220,6 +223,7 @@ export function useDraw() {
           [x, y + font / 2],
           [x, y]
         ]
+        this.rotatePoint = { x: drawWidth / 2, y: font / 2 }
         this.ctx.fillText(e.target.value, x, y)
       }
       input.onblur = e => {
@@ -388,11 +392,21 @@ export function useDraw() {
       // 考虑层级关系，越上面的越先被选取
       for (let i = this.pathStore.length - 1; i >= 0; i--) {
         const path = this.pathStore[i].path
+        const rotatePoint = this.pathStore[i].rotatePoint
         const contextOptions = this.pathStore[i].contextOptions
-        // 计算最终鼠标点击的位置
+        // 计算位移后鼠标点击的位置
         const cot = contextOptions.translate || { x: 0, y: 0 }
-        const x = movePoint ? movePoint.x - cot.x : this.startPoint.x - cot.x
-        const y = movePoint ? movePoint.y - cot.y : this.startPoint.y - cot.y
+        let x = movePoint ? movePoint.x - cot.x : this.startPoint.x - cot.x
+        let y = movePoint ? movePoint.y - cot.y : this.startPoint.y - cot.y
+        // 计算旋转后鼠标的位置
+        const cor = contextOptions.rotate
+        if (cor) {
+          const distanceX = x - rotatePoint.x
+          const distenceY = y - rotatePoint.y
+          const distance = Math.pow(distanceX * distanceX + distenceY * distenceY, 1/2)
+          // const rX = Math.cos(cor) * distance
+          y = y - Math.sin(cor) * distance
+        }
         // 判断路径
         const isPointInPath = this.ctx.isPointInPath(path.text ? path.vPath : path, x, y)
         // 点击时设置骨架状态
@@ -441,6 +455,7 @@ export function useDraw() {
       if (!this.path) return
       this.pathStore.push({
         type: this.type,
+        rotatePoint: this.rotatePoint, // 旋转原点
         contextOptions: this.contextOptions || {},
         path: this.path,
         bones: this.bones,
@@ -449,6 +464,7 @@ export function useDraw() {
       this.path = null
       this.bones = []
       this.type = 'stroke'
+      this.rotatePoint = null
       this.contextOptions = null
     }
 
