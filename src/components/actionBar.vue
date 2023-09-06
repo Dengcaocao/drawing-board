@@ -1,15 +1,15 @@
 <template>
   <aside class="aside">
     <div class="tabbar-box" :class="{collapsed: isCoolapsed}">
-      <div class="tabbar" :style="{'max-height': `${tabbarHeight}px`}">
+      <div ref="tabbar" class="tabbar" :style="{'max-height': `${tabbarMaxHeight}px`}">
         <input
           class="line-width"
           type="range"
           v-model="stroe.ctx.lineWidth"
-          :max="maxWidth"
+          :max="maxRangeWidth"
           :style="{
-            width: `${tabbarHeight - 8 - 6}px`,
-            'background-image': `linear-gradient(to right, #91caff ${stroe.ctx.lineWidth / maxWidth * 100 + '%'}, transparent ${stroe.ctx.lineWidth / 100 * 100 + '%'})`
+            width: `${rangeWidth}px`,
+            'background-image': `linear-gradient(to right, #91caff ${stroe.ctx.lineWidth / maxRangeWidth * 100 + '%'}, transparent ${stroe.ctx.lineWidth / 100 * 100 + '%'})`
           }"
           @change="handleChange('lineWidth', $event.target.value)">
         <div
@@ -43,7 +43,7 @@
 </template>
 
 <script setup>
-import { onBeforeUnmount, onMounted, reactive, ref } from 'vue'
+import { onBeforeUnmount, onMounted, reactive, ref, nextTick } from 'vue'
 import { useContext } from '@/stores/context'
 
 const props = defineProps({
@@ -55,9 +55,11 @@ const props = defineProps({
 
 const stroe = useContext()
 
+const tabbar = ref()
 const isCoolapsed = ref(false)
-const tabbarHeight = ref(window.innerHeight - 40)
-const maxWidth = ref(50)
+const tabbarMaxHeight = ref(0)
+const rangeWidth = ref(0)
+const maxRangeWidth = ref(50)
 const actionType = reactive([
   {
     icon: 'icon-juxing1',
@@ -101,9 +103,13 @@ const actionType = reactive([
   }
 ])
 
-const setTabbarHeight = () => {
+const setRangeWidth = () => {
+  rangeWidth.value = parseInt(getComputedStyle(tabbar.value).height) - 20
+}
+
+const setTabbarMaxHeight = () => {
   // 上下边距20
-  tabbarHeight.value = window.innerHeight - 40
+  tabbarMaxHeight.value = window.innerHeight - 40
 }
 
 const handleChange = (fileds, value) => {
@@ -113,8 +119,22 @@ const handleChange = (fileds, value) => {
   stroe.updateCtx(fileds, value)
 }
 
-onMounted(() => window.addEventListener('resize', setTabbarHeight))
-onBeforeUnmount(() => window.removeEventListener('resize', setTabbarHeight))
+onMounted(() => {
+  setTabbarMaxHeight()
+  nextTick(() => {
+    setRangeWidth()
+  })
+  window.addEventListener('resize', () => {
+    setRangeWidth()
+    setTabbarMaxHeight()
+  })
+})
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', () => {
+    setRangeWidth()
+    setTabbarMaxHeight()
+  })
+})
 </script>
 
 <style>
@@ -159,9 +179,9 @@ onBeforeUnmount(() => window.removeEventListener('resize', setTabbarHeight))
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  padding: 12px;
+  padding: 0.12rem;
   box-sizing: border-box;
-  border-radius: 10px;
+  border-radius: 0.1rem;
   background-color: #fff;
   box-shadow: 0 3px 6px -4px rgba(0, 0, 0, 0.12),
               0 6px 16px 0px rgba(0, 0, 0, 0.08),
@@ -169,15 +189,15 @@ onBeforeUnmount(() => window.removeEventListener('resize', setTabbarHeight))
 }
 .tabbar .item {
   flex-shrink: 0;
-  width: 20px;
-  height: 20px;
-  padding: 4px;
-  border-radius: 4px;
-  font-size: 20px;
+  width: 0.2rem;
+  height: 0.2rem;
+  padding: 0.04rem;
+  border-radius: 0.04rem;
+  font-size: 0.2rem;
   cursor: pointer;
 }
 .tabbar .item:not(:nth-child(2)) {
-  margin-top: 15px;
+  margin-top: 0.15rem;
 }
 .tabbar .item:hover,
 .item.active {
@@ -191,18 +211,17 @@ onBeforeUnmount(() => window.removeEventListener('resize', setTabbarHeight))
 }
 .line-width {
   position: absolute;
-  top: 7px;
-  left: 52px;
+  top: 0.1rem;
+  left: 0.52rem;
   transform-origin: left center;
   transform: rotate(90deg);
-  width: 1px;
   height: 1px;
   -webkit-appearance: none;
 }
 .line-width::-webkit-slider-thumb {
   -webkit-appearance: none;
-  width: 15px;
-  height: 15px;
+  width: 0.15rem;
+  height: 0.15rem;
   background-color: #fff;
   border-radius: 50%;
   cursor: pointer;
@@ -224,4 +243,18 @@ onBeforeUnmount(() => window.removeEventListener('resize', setTabbarHeight))
   border-radius: 50%;
   background-image: linear-gradient(to bottom left, transparent 51%, gray 51%, gray 55%, transparent 55%);
 }
+/* 适配移动设备 */
+@media only screen and (max-width: 750px) {
+  html,body {
+    font-size: 50px;
+  }
+}
+
+/* 适配PC设备 */
+@media only screen and (min-width: 751px) {
+  html,body {
+    font-size: 100px;
+  }
+}
+
 </style>
