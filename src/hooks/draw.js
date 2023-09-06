@@ -393,6 +393,7 @@ export function useDraw() {
       for (let i = this.pathStore.length - 1; i >= 0; i--) {
         const path = this.pathStore[i].path
         const rotatePoint = this.pathStore[i].rotatePoint
+        const bones = this.pathStore[i].bones
         const contextOptions = this.pathStore[i].contextOptions
         // 计算位移后鼠标点击的位置
         const cot = contextOptions.translate || { x: 0, y: 0 }
@@ -404,15 +405,15 @@ export function useDraw() {
           const distanceX = x - rotatePoint.x
           const distenceY = y - rotatePoint.y
           const distance = Math.pow(distanceX * distanceX + distenceY * distenceY, 1/2)
-          // const rX = Math.cos(cor) * distance
-          y = y - Math.sin(cor) * distance
+          // BUG 垂直时只有x为0才能被选中
+          x = distanceX < 0 ? -distance : distance
+          y = y - (Math.sin(cor) * (distanceX < 0 ? -distance : distance))
         }
         // 判断路径
         const isPointInPath = this.ctx.isPointInPath(path.text ? path.vPath : path, x, y)
         // 点击时设置骨架状态
         if (!movePoint) this.pathStore[i].isShowBones = isPointInPath
         if (this.pathStore[i].isShowBones) {
-          const bones = this.pathStore[i].bones
           // 设置新的坐标信息
           contextOptions.translate = {
             x: movePoint ? cot.x + translatePoint.x : cot.x,
