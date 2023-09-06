@@ -119,21 +119,19 @@ const handleChange = (fileds, value) => {
   stroe.updateCtx(fileds, value)
 }
 
-onMounted(() => {
+const init = () => {
   setTabbarMaxHeight()
   nextTick(() => {
     setRangeWidth()
   })
-  window.addEventListener('resize', () => {
-    setRangeWidth()
-    setTabbarMaxHeight()
-  })
+}
+
+onMounted(() => {
+  init()
+  window.addEventListener('resize', init)
 })
 onBeforeUnmount(() => {
-  window.removeEventListener('resize', () => {
-    setRangeWidth()
-    setTabbarMaxHeight()
-  })
+  window.removeEventListener('resize', init)
 })
 </script>
 
@@ -246,7 +244,7 @@ onBeforeUnmount(() => {
 /* 适配移动设备 */
 @media only screen and (max-width: 750px) {
   html,body {
-    font-size: 50px;
+    font-size: 66px;
   }
 }
 

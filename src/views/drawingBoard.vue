@@ -27,9 +27,8 @@ let times = 0
  * @return {*}
  */
 const initSize = () => {
-  const { clientWidth, clientHeight } = document.documentElement
-  cDom.value.width = clientWidth
-  cDom.value.height = clientHeight
+  cDom.value.width = window.innerWidth
+  cDom.value.height = window.innerHeight
   drawMethod.reDraw()
 }
 
@@ -129,10 +128,6 @@ onBeforeUnmount(() => {
 </script>
 
 <style>
-.canvas-root {
-  width: 100vw;
-  height: 100vh;
-}
 .canvas {
   position: fixed;
   top: 0;
