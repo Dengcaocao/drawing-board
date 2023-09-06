@@ -1,5 +1,5 @@
 <template>
-  <main ref="canvasRoot">
+  <main ref="canvasRoot" class="canvas-root">
     <canvas ref="cDom" class="canvas" :class="{'show-grid': contextStore.isGrid}"></canvas>
     <action-bar :actions="actions" />
   </main>
@@ -129,6 +129,10 @@ onBeforeUnmount(() => {
 </script>
 
 <style>
+.canvas-root {
+  width: 100vw;
+  height: 100vh;
+}
 .canvas {
   position: fixed;
   top: 0;

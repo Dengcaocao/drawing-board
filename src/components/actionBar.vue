@@ -1,35 +1,37 @@
 <template>
-  <aside>
-    <div class="tabbar" :class="{collapsed: isCoolapsed}" ref="tabbar">
-      <input
-        class="line-width"
-        type="range"
-        v-model="stroe.ctx.lineWidth"
-        :max="maxWidth"
-        :style="{
-          width: rangeWidth,
-          'background-image': `linear-gradient(to right, #91caff ${stroe.ctx.lineWidth / maxWidth * 100 + '%'}, transparent ${stroe.ctx.lineWidth / 100 * 100 + '%'})`
-        }"
-        @change="handleChange('lineWidth', $event.target.value)">
-      <div
-        class="item iconfont icon-wangge"
-        :class="{'hide-grid': !stroe.isGrid}"
-        @click="stroe.updateIsGrid">
-      </div>
-      <div class="item">
+  <aside class="aside">
+    <div class="tabbar-box" :class="{collapsed: isCoolapsed}">
+      <div class="tabbar" :style="{'max-height': `${tabbarHeight}px`}">
         <input
-          class="color"
-          type="color"
-          v-model="stroe.ctx.color"
-          @change="handleChange('color', $event.target.value)">
-      </div>
-      <div
-        class="item iconfont"
-        v-for="item in actionType"
-        :key="item.type"
-        :class="[item.icon, stroe.ctx.mode === item.type ? 'active' : '']"
-        :style="{transform: item.type === 'forward' && 'scaleX(-1)'}"
-        @click.stop="handleChange('mode', item.type)">
+          class="line-width"
+          type="range"
+          v-model="stroe.ctx.lineWidth"
+          :max="maxWidth"
+          :style="{
+            width: `${tabbarHeight - 8 - 6}px`,
+            'background-image': `linear-gradient(to right, #91caff ${stroe.ctx.lineWidth / maxWidth * 100 + '%'}, transparent ${stroe.ctx.lineWidth / 100 * 100 + '%'})`
+          }"
+          @change="handleChange('lineWidth', $event.target.value)">
+        <div
+          class="item iconfont icon-wangge"
+          :class="{'hide-grid': !stroe.isGrid}"
+          @click="stroe.updateIsGrid">
+        </div>
+        <div class="item">
+          <input
+            class="color"
+            type="color"
+            v-model="stroe.ctx.color"
+            @change="handleChange('color', $event.target.value)">
+        </div>
+        <div
+          class="item iconfont"
+          v-for="item in actionType"
+          :key="item.type"
+          :class="[item.icon, stroe.ctx.mode === item.type ? 'active' : '']"
+          :style="{transform: item.type === 'forward' && 'scaleX(-1)'}"
+          @click.stop="handleChange('mode', item.type)">
+        </div>
       </div>
     </div>
     <div
@@ -41,7 +43,7 @@
 </template>
 
 <script setup>
-import { computed, reactive, ref } from 'vue'
+import { onBeforeUnmount, onMounted, reactive, ref } from 'vue'
 import { useContext } from '@/stores/context'
 
 const props = defineProps({
@@ -54,7 +56,7 @@ const props = defineProps({
 const stroe = useContext()
 
 const isCoolapsed = ref(false)
-const tabbar = ref(null)
+const tabbarHeight = ref(window.innerHeight - 40)
 const maxWidth = ref(50)
 const actionType = reactive([
   {
@@ -99,10 +101,10 @@ const actionType = reactive([
   }
 ])
 
-const rangeWidth = computed(() => {
-  if (!tabbar.value) return 0
-  return getComputedStyle(tabbar.value).height
-})
+const setTabbarHeight = () => {
+  // 上下边距20
+  tabbarHeight.value = window.innerHeight - 40
+}
 
 const handleChange = (fileds, value) => {
   if (['revoke', 'forward', 'download'].includes(value)) {
@@ -110,6 +112,9 @@ const handleChange = (fileds, value) => {
   }
   stroe.updateCtx(fileds, value)
 }
+
+onMounted(() => window.addEventListener('resize', setTabbarHeight))
+onBeforeUnmount(() => window.removeEventListener('resize', setTabbarHeight))
 </script>
 
 <style>
@@ -139,27 +144,31 @@ const handleChange = (fileds, value) => {
     left: -6px;
   }
 }
-.tabbar {
-  position: absolute;
+.aside .tabbar-box {
+  position: fixed;
   top: 50%;
   left: 30px;
+  transition: .2s;
   transform: translateY(-50%);
+}
+.tabbar-box.collapsed {
+  left: 0;
+  transform: translate(-100%, -50%);
+}
+.tabbar-box .tabbar {
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   padding: 12px;
+  box-sizing: border-box;
   border-radius: 10px;
   background-color: #fff;
-  transition: .2s;
   box-shadow: 0 3px 6px -4px rgba(0, 0, 0, 0.12),
               0 6px 16px 0px rgba(0, 0, 0, 0.08),
               0 9px 28px 8px rgba(0, 0, 0, 0.05);
 }
-.tabbar.collapsed {
-  left: 0;
-  transform: translate(-100%, -50%);
-}
 .tabbar .item {
+  flex-shrink: 0;
   width: 20px;
   height: 20px;
   padding: 4px;
@@ -178,10 +187,11 @@ const handleChange = (fileds, value) => {
   display: block;
   width: 100%;
   height: 100%;
+  flex-shrink: 0;
 }
 .line-width {
   position: absolute;
-  top: 12px;
+  top: 7px;
   left: 52px;
   transform-origin: left center;
   transform: rotate(90deg);
