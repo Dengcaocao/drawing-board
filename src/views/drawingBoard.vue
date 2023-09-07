@@ -27,8 +27,9 @@ let times = 0
  * @return {*}
  */
 const initSize = () => {
-  cDom.value.width = window.innerWidth
-  cDom.value.height = window.innerHeight
+  const { clientWidth, clientHeight } = document.documentElement
+  cDom.value.width = clientWidth
+  cDom.value.height = clientHeight
   drawMethod.reDraw()
 }
 

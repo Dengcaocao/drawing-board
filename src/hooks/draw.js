@@ -228,13 +228,14 @@ export function useDraw() {
       }
       input.onblur = e => {
         this.isCreateInput = false
-         // 创建一个和文本宽高的矩形路径，用于拖拽判断
+        input.parentNode.removeChild(input)
+        if (!e.target.value) return this.contextOptions = null
+        // 创建一个和文本宽高的矩形路径，用于拖拽判断
         const path = new Path2D()
         path.rect(x, realityY, drawWidth, font)
         this.path = { x, y, text: e.target.value, vPath: path }
         this.ctx.restore()
-        e.target.value && this.savePath()
-        input.parentNode.removeChild(input)
+        this.savePath()
       }
       // 输入框样式
       input.style.cssText = `
